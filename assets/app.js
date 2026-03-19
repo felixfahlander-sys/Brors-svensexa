@@ -270,7 +270,6 @@ function switchTab(tab) {
   if (tab === 'log')      renderLog();
   if (tab === 'settings') renderSettings();
   if (tab === 'wheel')    drawWheelFrame(state.wheelRotation || 0);
-  if (tab === 'blame')    renderBlameTally();
 }
 
 // ════════════════════════════════════════════════════════════════
@@ -383,18 +382,29 @@ function renderBlameTally() {
 }
 
 function initBlame() {
+  document.getElementById('btn-blame-open').addEventListener('click', () => {
+    playSoundClick();
+    document.getElementById('modal-blame').hidden = false;
+    renderBlameTally();
+    document.getElementById('btn-blame-pick').focus();
+  });
   document.getElementById('btn-blame-pick').addEventListener('click', () => {
     playSoundClick();
     pickBlame();
   });
   document.getElementById('btn-blame-reroll').addEventListener('click', () => {
     playSoundClick();
-    // Undo last tally entry and repick
     if (lastBlamePick && state.blameTally[lastBlamePick] > 0) {
       state.blameTally[lastBlamePick]--;
       if (state.blameTally[lastBlamePick] === 0) delete state.blameTally[lastBlamePick];
     }
     pickBlame();
+  });
+  document.getElementById('btn-blame-close').addEventListener('click', () => {
+    document.getElementById('modal-blame').hidden = true;
+  });
+  document.querySelector('.modal-backdrop').addEventListener('click', () => {
+    document.getElementById('modal-blame').hidden = true;
   });
 }
 
@@ -967,49 +977,6 @@ function renderSettingsPlayersList() {
   });
 }
 
-// ════════════════════════════════════════════════════════════════
-// DECISION HELPER
-// ════════════════════════════════════════════════════════════════
-
-function openDecision() {
-  document.getElementById('modal-decision').hidden = false;
-  document.getElementById('btn-decision-roll').focus();
-}
-
-function closeDecision() {
-  document.getElementById('modal-decision').hidden = true;
-}
-
-function rollDecision() {
-  const answers = state.decisionAnswers || DEFAULTS.decisionAnswers;
-  let answer = answers[Math.floor(Math.random() * answers.length)];
-
-  // Replace {{NAME}} with a random player
-  if (answer.includes('{{NAME}}')) {
-    const name = state.players[Math.floor(Math.random() * state.players.length)];
-    answer = answer.replace(/\{\{NAME\}\}/g, name);
-  }
-
-  const el = document.getElementById('decision-result');
-  el.textContent = answer;
-  el.classList.add('has-result');
-  confetti(20);
-  haptic([30, 20, 30]);
-  playSoundWin();
-}
-
-function initDecision() {
-  document.getElementById('btn-decision').addEventListener('click', () => {
-    playSoundClick();
-    openDecision();
-  });
-  document.getElementById('btn-decision-roll').addEventListener('click', () => {
-    playSoundClick();
-    rollDecision();
-  });
-  document.getElementById('btn-decision-close').addEventListener('click', closeDecision);
-  document.querySelector('.modal-backdrop').addEventListener('click', closeDecision);
-}
 
 // ════════════════════════════════════════════════════════════════
 // RIGGED MODE  (long-press on app title 800ms)
@@ -1128,7 +1095,6 @@ function init() {
   initWheel();
   initScore();
   initLog();
-  initDecision();
   initRiggedMode();
 
   // Restore rigged badge

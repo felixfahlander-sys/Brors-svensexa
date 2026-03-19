@@ -21,7 +21,7 @@
       <span id="app-title">🎩 Pontus Sexa</span>
       <div id="header-right">
         <span id="rigged-badge" hidden aria-label="Rigged mode is active">🎛️ Rigged</span>
-        <button id="btn-decision" aria-label="Should we do this?" title="Should we do this?">❓</button>
+        <button id="btn-blame-open" aria-label="Who's to Blame?" title="Who's to Blame?">🤬</button>
       </div>
     </div>
     <!-- Hidden rigging panel, revealed by long-press on header title -->
@@ -55,20 +55,6 @@
         <button id="btn-pays-exclude" class="btn-secondary" disabled aria-label="Exclude this person once">🚫 Exclude</button>
       </div>
       <div id="pays-excluded" class="excluded-list" aria-label="Excluded players" aria-live="polite"></div>
-    </section>
-
-    <!-- TAB: Who's to Blame? -->
-    <section id="tab-blame" class="tab-panel" aria-label="Who's to Blame" hidden>
-      <h2>🤬 Who's to Blame?</h2>
-      <div id="blame-result" class="result-box" aria-live="polite" aria-atomic="true">
-        <span class="result-placeholder">Press the button!</span>
-      </div>
-      <div id="blame-reason" class="result-reason blame-reason-text"></div>
-      <div class="btn-group">
-        <button id="btn-blame-pick" class="btn-primary btn-xl">☝️ Find Culprit!</button>
-        <button id="btn-blame-reroll" class="btn-secondary" disabled>🔄 Reroll</button>
-      </div>
-      <div id="blame-tally" class="tally-list" aria-label="Blame tally" aria-live="polite"></div>
     </section>
 
     <!-- TAB: Wheel of Consequences -->
@@ -134,10 +120,6 @@
       <span class="nav-icon">💸</span>
       <span class="nav-label">Pays</span>
     </button>
-    <button class="nav-btn" data-tab="blame" aria-label="Who's to Blame">
-      <span class="nav-icon">🤬</span>
-      <span class="nav-label">Blame</span>
-    </button>
     <button class="nav-btn" data-tab="wheel" aria-label="Wheel">
       <span class="nav-icon">🎡</span>
       <span class="nav-label">Wheel</span>
@@ -158,18 +140,21 @@
 
   <!-- ═══════════════════════════ MODALS ═══════════════════════════ -->
 
-  <!-- Decision Modal -->
-  <div id="modal-decision" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="decision-title">
+  <!-- Blame Modal -->
+  <div id="modal-blame" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="blame-modal-title">
     <div class="modal-backdrop"></div>
     <div class="modal-box">
-      <h2 id="decision-title">Should We Do This? 🤔</h2>
-      <div id="decision-result" class="result-box decision-box" aria-live="polite" aria-atomic="true">
-        Press the button…
+      <h2 id="blame-modal-title">🤬 Who's to Blame?</h2>
+      <div id="blame-result" class="result-box decision-box" aria-live="polite" aria-atomic="true">
+        <span class="result-placeholder">Press the button!</span>
       </div>
-      <div class="btn-group">
-        <button id="btn-decision-roll" class="btn-primary btn-xl">🎲 Decide!</button>
-        <button id="btn-decision-close" class="btn-secondary">Nope, close</button>
+      <div id="blame-reason" class="result-reason blame-reason-text"></div>
+      <div class="btn-group blame-btn-group">
+        <button id="btn-blame-pick" class="btn-primary btn-xl">☝️ Find Culprit!</button>
+        <button id="btn-blame-reroll" class="btn-secondary" disabled>🔄 Reroll</button>
+        <button id="btn-blame-close" class="btn-secondary">✕ Close</button>
       </div>
+      <div id="blame-tally" class="tally-list" aria-label="Blame tally" aria-live="polite"></div>
     </div>
   </div>
 
