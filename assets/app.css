@@ -40,10 +40,8 @@
 #tab-wheel    { --tc: #a855f7; --tc2: #c084fc; --tc-glow: rgba(168,85,247,.28); }
 #tab-score    { --tc: #f59e0b; --tc2: #fcd34d; --tc-glow: rgba(245,158,11,.28); }
 #tab-log      { --tc: #06b6d4; --tc2: #67e8f9; --tc-glow: rgba(6,182,212,.28); }
+#tab-decision { --tc: #f43f5e; --tc2: #fb7185; --tc-glow: rgba(244,63,94,.28); }
 #tab-settings { --tc: #6366f1; --tc2: #818cf8; --tc-glow: rgba(99,102,241,.28); }
-
-/* Blame modal uses red accent */
-#modal-blame  { --tc: #f43f5e; --tc2: #fb7185; --tc-glow: rgba(244,63,94,.28); }
 
 /* ── Base ── */
 html { height: 100%; }
@@ -717,12 +715,13 @@ button:disabled { opacity: .28; pointer-events: none; }
 .nav-label { transition: color .15s; }
 
 /* Per-tab colored active state */
-/* 5 nav tabs: Pays · Wheel · Score · Log · Settings */
+/* 6 nav tabs: Pays · Wheel · Score · Log · Should we? · Settings */
 .nav-btn:nth-child(1).active { color: #10b981; }
 .nav-btn:nth-child(2).active { color: #a855f7; }
 .nav-btn:nth-child(3).active { color: #f59e0b; }
 .nav-btn:nth-child(4).active { color: #06b6d4; }
-.nav-btn:nth-child(5).active { color: #6366f1; }
+.nav-btn:nth-child(5).active { color: #f43f5e; }
+.nav-btn:nth-child(6).active { color: #6366f1; }
 
 /* ────────────────────────────────────────────
    MODAL (decision helper)
@@ -768,21 +767,13 @@ button:disabled { opacity: .28; pointer-events: none; }
 
 .modal-box h2 { text-align: center; font-size: 1.35rem; font-weight: 900; letter-spacing: -.04em; }
 
-.decision-box {
+.decision-result-box {
   font-size: 1.35rem;
   font-weight: 900;
-  min-height: 5.5rem;
+  min-height: 8rem;
   letter-spacing: -.03em;
-  line-height: 1.25;
+  line-height: 1.3;
 }
-
-/* Blame modal: Reroll + Close sit side by side below the big button */
-.blame-btn-group {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: .65rem;
-}
-.blame-btn-group .btn-xl { grid-column: 1 / -1; }
 
 /* ────────────────────────────────────────────
    TOAST

@@ -270,6 +270,12 @@ function switchTab(tab) {
   if (tab === 'log')      renderLog();
   if (tab === 'settings') renderSettings();
   if (tab === 'wheel')    drawWheelFrame(state.wheelRotation || 0);
+  if (tab === 'decision') {
+    // Reset result so each visit feels fresh
+    const el = document.getElementById('decision-result');
+    el.innerHTML = '<span class="result-placeholder">Ask the oracle…</span>';
+    el.classList.remove('has-result');
+  }
 }
 
 // ════════════════════════════════════════════════════════════════
@@ -338,73 +344,30 @@ function initPays() {
 }
 
 // ════════════════════════════════════════════════════════════════
-// WHO'S TO BLAME
+// SHOULD WE DO THIS?
 // ════════════════════════════════════════════════════════════════
 
-let lastBlamePick = null;
+function rollDecision() {
+  const answers = state.decisionAnswers || DEFAULTS.decisionAnswers;
+  let answer = answers[Math.floor(Math.random() * answers.length)];
 
-function pickBlame() {
-  const name = weightedPick(state.players, 'blame');
-  lastBlamePick = name;
-  updateRecent('blame', name);
+  if (answer.includes('{{NAME}}')) {
+    const name = state.players[Math.floor(Math.random() * state.players.length)];
+    answer = answer.replace(/\{\{NAME\}\}/g, name);
+  }
 
-  const reason = state.blameReasons[Math.floor(Math.random() * state.blameReasons.length)];
-
-  document.getElementById('blame-result').innerHTML = '🤬 ' + name + '!';
-  document.getElementById('blame-result').classList.add('has-result');
-  document.getElementById('blame-reason').textContent = reason;
-  document.getElementById('btn-blame-reroll').disabled = false;
-
-  // Update tally
-  state.blameTally = state.blameTally || {};
-  state.blameTally[name] = (state.blameTally[name] || 0) + 1;
-
-  renderBlameTally();
+  const el = document.getElementById('decision-result');
+  el.innerHTML = answer;
+  el.classList.add('has-result');
   confetti(20);
-  haptic([50, 30]);
-  playSoundDrum();
-  saveState();
+  haptic([30, 20, 30]);
+  playSoundWin();
 }
 
-function renderBlameTally() {
-  const tally = state.blameTally || {};
-  const sorted = Object.entries(tally).sort((a, b) => b[1] - a[1]).slice(0, 5);
-  const max = sorted.length ? sorted[0][1] : 1;
-  const el = document.getElementById('blame-tally');
-  if (!sorted.length) { el.innerHTML = '<div class="empty-state">No culprits yet…</div>'; return; }
-  el.innerHTML = sorted.map(([name, count]) => `
-    <div class="tally-row">
-      <span class="tally-name">${name}</span>
-      <div class="tally-bar-bg"><div class="tally-bar" style="width:${Math.round(count/max*100)}%"></div></div>
-      <span class="tally-count">${count}x</span>
-    </div>
-  `).join('');
-}
-
-function initBlame() {
-  document.getElementById('btn-blame-open').addEventListener('click', () => {
+function initDecision() {
+  document.getElementById('btn-decision-roll').addEventListener('click', () => {
     playSoundClick();
-    document.getElementById('modal-blame').hidden = false;
-    renderBlameTally();
-    document.getElementById('btn-blame-pick').focus();
-  });
-  document.getElementById('btn-blame-pick').addEventListener('click', () => {
-    playSoundClick();
-    pickBlame();
-  });
-  document.getElementById('btn-blame-reroll').addEventListener('click', () => {
-    playSoundClick();
-    if (lastBlamePick && state.blameTally[lastBlamePick] > 0) {
-      state.blameTally[lastBlamePick]--;
-      if (state.blameTally[lastBlamePick] === 0) delete state.blameTally[lastBlamePick];
-    }
-    pickBlame();
-  });
-  document.getElementById('btn-blame-close').addEventListener('click', () => {
-    document.getElementById('modal-blame').hidden = true;
-  });
-  document.querySelector('.modal-backdrop').addEventListener('click', () => {
-    document.getElementById('modal-blame').hidden = true;
+    rollDecision();
   });
 }
 
@@ -824,12 +787,6 @@ function renderSettings() {
       <textarea id="settings-score-cats">${state.scoreCategories.join('\n')}</textarea>
     </div>
 
-    <!-- Blame reasons -->
-    <div class="setting-card">
-      <label>🤬 Blame Reasons (one per line)</label>
-      <textarea id="settings-blame-reasons">${state.blameReasons.join('\n')}</textarea>
-    </div>
-
     <!-- Toggles -->
     <div class="setting-card">
       <div class="setting-row">
@@ -864,7 +821,6 @@ function renderSettings() {
       <label>⚠️ Danger Zone</label>
       <div class="btn-group">
         <button id="btn-reset-paysexclude" class="btn-secondary btn-sm">🔄 Clear Pay Excludes</button>
-        <button id="btn-reset-blame-tally" class="btn-secondary btn-sm">🔄 Reset Blame Tally</button>
         <button id="btn-factory-reset" class="btn-danger btn-sm">💥 Factory Reset</button>
       </div>
     </div>
@@ -904,7 +860,6 @@ function renderSettings() {
 
   saveTextarea('settings-wheel-items',  'wheelItems',      v => v.split('\n').map(s=>s.trim()).filter(Boolean));
   saveTextarea('settings-score-cats',   'scoreCategories', v => v.split('\n').map(s=>s.trim()).filter(Boolean));
-  saveTextarea('settings-blame-reasons','blameReasons',     v => v.split('\n').map(s=>s.trim()).filter(Boolean));
 
   document.getElementById('settings-sounds').addEventListener('change', e => {
     state.soundsOn = e.target.checked;
@@ -928,11 +883,6 @@ function renderSettings() {
     state.paysExcluded = []; saveState();
     document.getElementById('pays-excluded').textContent = '';
     toast('✅ Pay excludes cleared');
-  });
-  document.getElementById('btn-reset-blame-tally').addEventListener('click', () => {
-    if (!confirm('Reset blame tally?')) return;
-    state.blameTally = {}; saveState();
-    toast('✅ Blame tally reset');
   });
   document.getElementById('btn-factory-reset').addEventListener('click', () => {
     if (!confirm('FACTORY RESET? This deletes EVERYTHING including the log.')) return;
@@ -1091,10 +1041,10 @@ function init() {
   loadState();
   initNav();
   initPays();
-  initBlame();
   initWheel();
   initScore();
   initLog();
+  initDecision();
   initRiggedMode();
 
   // Restore rigged badge

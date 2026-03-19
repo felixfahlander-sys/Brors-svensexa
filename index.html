@@ -21,7 +21,6 @@
       <span id="app-title">🎩 Pontus Sexa</span>
       <div id="header-right">
         <span id="rigged-badge" hidden aria-label="Rigged mode is active">🎛️ Rigged</span>
-        <button id="btn-blame-open" aria-label="Who's to Blame?" title="Who's to Blame?">🤬</button>
       </div>
     </div>
     <!-- Hidden rigging panel, revealed by long-press on header title -->
@@ -106,6 +105,17 @@
       </div>
     </section>
 
+    <!-- TAB: Should We Do This? -->
+    <section id="tab-decision" class="tab-panel" aria-label="Should We Do This" hidden>
+      <h2>🤔 Should We?</h2>
+      <div id="decision-result" class="result-box decision-result-box" aria-live="polite" aria-atomic="true">
+        <span class="result-placeholder">Ask the oracle…</span>
+      </div>
+      <div class="btn-group">
+        <button id="btn-decision-roll" class="btn-primary btn-xl">🎲 Decide!</button>
+      </div>
+    </section>
+
     <!-- TAB: Settings -->
     <section id="tab-settings" class="tab-panel" aria-label="Settings" hidden>
       <h2>⚙️ Settings</h2>
@@ -132,31 +142,15 @@
       <span class="nav-icon">📝</span>
       <span class="nav-label">Log</span>
     </button>
+    <button class="nav-btn" data-tab="decision" aria-label="Should We Do This">
+      <span class="nav-icon">🤔</span>
+      <span class="nav-label">Should we?</span>
+    </button>
     <button class="nav-btn" data-tab="settings" aria-label="Settings">
       <span class="nav-icon">⚙️</span>
       <span class="nav-label">Setup</span>
     </button>
   </nav>
-
-  <!-- ═══════════════════════════ MODALS ═══════════════════════════ -->
-
-  <!-- Blame Modal -->
-  <div id="modal-blame" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="blame-modal-title">
-    <div class="modal-backdrop"></div>
-    <div class="modal-box">
-      <h2 id="blame-modal-title">🤬 Who's to Blame?</h2>
-      <div id="blame-result" class="result-box decision-box" aria-live="polite" aria-atomic="true">
-        <span class="result-placeholder">Press the button!</span>
-      </div>
-      <div id="blame-reason" class="result-reason blame-reason-text"></div>
-      <div class="btn-group blame-btn-group">
-        <button id="btn-blame-pick" class="btn-primary btn-xl">☝️ Find Culprit!</button>
-        <button id="btn-blame-reroll" class="btn-secondary" disabled>🔄 Reroll</button>
-        <button id="btn-blame-close" class="btn-secondary">✕ Close</button>
-      </div>
-      <div id="blame-tally" class="tally-list" aria-label="Blame tally" aria-live="polite"></div>
-    </div>
-  </div>
 
   <!-- ═══════════════════════════ OVERLAYS ═══════════════════════════ -->
   <div id="toast-container" aria-live="polite" aria-atomic="true"></div>
