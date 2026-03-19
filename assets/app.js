@@ -376,7 +376,7 @@ function renderBlameTally() {
   if (!sorted.length) { el.innerHTML = '<div class="empty-state">No culprits yet…</div>'; return; }
   el.innerHTML = sorted.map(([name, count]) => `
     <div class="tally-row">
-      <span style="min-width:5rem;font-weight:700">${name}</span>
+      <span class="tally-name">${name}</span>
       <div class="tally-bar-bg"><div class="tally-bar" style="width:${Math.round(count/max*100)}%"></div></div>
       <span class="tally-count">${count}x</span>
     </div>
