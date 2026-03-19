@@ -286,7 +286,6 @@ function pickPays(pool) {
   updateRecent('pays', name);
 
   const result = document.getElementById('pays-result');
-  const reason = document.getElementById('pays-result');
 
   result.innerHTML = '💸 ' + name + '!';
   result.classList.add('has-result');

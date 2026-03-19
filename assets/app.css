@@ -157,6 +157,9 @@ body {
   overscroll-behavior: contain;
 }
 
+/* Ensure [hidden] is respected even when display:flex is set on the same element */
+[hidden] { display: none !important; }
+
 .tab-panel {
   padding: 1.5rem 1.25rem 3rem;
   min-height: calc(100dvh - var(--header-h) - var(--nav-h));
