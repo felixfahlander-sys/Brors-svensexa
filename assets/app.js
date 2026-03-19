@@ -1113,7 +1113,7 @@ function esc(s) {
 
 function registerSW() {
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/service-worker.js').catch(() => {});
+    navigator.serviceWorker.register('service-worker.js').catch(() => {});
   }
 }
 
