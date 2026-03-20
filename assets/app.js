@@ -10,71 +10,59 @@
 // ════════════════════════════════════════════════════════════════
 
 const STATE_KEY = 'bcp_state';
+const STATE_VERSION = 4;  // bump when defaults that override saved state change
 
 const DEFAULTS = {
-  players: ['Felix', 'Erik', 'Jonas', 'Max', 'Oskar', 'Bachelor'],
-  bachelorName: 'Bachelor',
+  stateVersion: STATE_VERSION,
+  players: [
+    'Alexander Larsen', 'Andre Sundh', 'Andreas Lelli', 'Axel Carlborg', 'Daniel Adersteg',
+    'Felix Ihd', 'Filip Düsing', 'Fredrik Hain', 'Jacob Blomgren', 'Jakob Norrby',
+    'Jim Cargill', 'Johan Julin', 'Jona Dahl', 'Kalle Lund', 'Karsten Ihd',
+    'Ludde Flyckt', 'Marcus Alm', 'Martin Fuentes', 'Oscar Krook', 'Oskar Kappel',
+    'Oskar Sjöblom', 'Peter Arneryd',
+  ],
+  bachelorName: 'Pontus',
   riggedMode: false,
-  weights: { Bachelor: 1.6 },          // keyed by player name; missing = 1.0
+  weights: {},                          // keyed by player name; missing = 1.0
   partyModeLevel: 0,                   // 0–5
   soundsOn: false,
   hapticsOn: true,
   wheelItems: [
-    '🍺 Down your drink',
-    '🕺 Dad dance 30 sec',
-    '📞 Call an ex — say hi',
-    '🎤 Sing 30 sec of a song',
-    '💃 Twerk attempt',
-    '🤳 Cringe selfie to group chat',
-    '🍋 Lemon shot, no chaser',
-    '🦆 Walk like a duck — 60 sec',
-    '💌 Text a random contact "You up?"',
-    '🙈 Best impression of the Bachelor',
+    '🧠 Förklara hur en termostat fungerar som om du håller en föreläsning för ingenjörsstudenter. Minst 90 sekunder. Gruppen sätter betyg.',
+    '🎭 Byt personlighet med personen till vänster i 10 minuter — samma röst, samma kroppsspråk, samma sätt att röra sig.',
+    '🗳️ Personen till höger väljer en karaktär som du ska gestalta. Du får instruktionen i hemlighet — och börjar spela den direkt, utan att avslöja vem det är. Resten av gruppen gissar.',
+    '🎯 Gruppen ger dig ett adjektiv — ett enda beskrivande ord, som mjuk, aggressiv eller kunglig. Du måste beställa nästa drink helt i linje med det ordet. Röst, kroppsspråk, allt.',
+    '😶 Du får bara kommunicera via frågor resten av drinken. Kommer ett påstående ur munnen på dig — ny konsekvens direkt.',
+    '🪑 Gå fram till en okänd person i närheten och för ett 5-minuters samtal. Personen till vänster om dig väljer vilket ämne du måste ta upp.',
+    '🎤 Håll ett 2-minuters försvarstal för en åsikt som gruppen väljer åt dig — oavsett vad du själv tycker.',
+    '🧾 Personen som snurrade hjulet skriver Pontus bröllopstal på 3 minuter. Pontus framför det högt direkt efteråt — utan att ha läst det först.',
+    '🤝 Ditt namn är struket för resten av kvällen. Gruppen döper om dig nu.',
+    '🔄 Du och personen till höger byter identitet. Ni svarar på varandras frågor och beställer varandras drinkar i 15 minuter.',
+    '🎪 Du har 60 sekunder på dig att sälja in en helt påhittad produkt till gruppen. De röstar om de köper — majoriteten avgör.',
+    '🕵️ Du ska avslöja en hemlighet om personen till höger om dig för närmaste främling i närheten. Helt stonefaced. Personen som snurrade hjulet väljer hemligheten.',
+    '🧩 Personen som snurrade hjulet formulerar ett problem. Du har 1 minut på dig att samla ihop saker från omgivningen — sedan 2 minuter att lösa det med bara det du hittade.',
+    '🎬 Gruppen väljer en filmscen. Du spelar samtliga roller själv — direkt och utan förberedelse.',
+    '👑 Du är gruppens personlige butler i 20 minuter. Vad det innebär beslutar gruppen gemensamt.',
   ],
-  scoreCategories: [
-    '🤮 Most Embarrassing',
-    '🍺 Drinks Down',
-    '📱 Phone Checks',
-    '😴 Almost Slept',
-    '🤡 Biggest Fail',
-    '💃 Best Dance Move',
-  ],
-  scores: {},          // { playerName: { category: count } }
   decisionAnswers: [
-    'ABSOLUTELY NOT 🚫',
-    'YES AND FILM IT 📹',
-    'Only if {{NAME}} pays 💸',
-    'Ask {{NAME}} first 🤔',
-    'The spirits say… YES 🎱',
-    'HELL YES! 🔥',
-    'Maybe after one more drink… 🍺',
-    'Your future self says NO 🚫',
-    'THE GROUP DEMANDS IT 👥',
-    'Signs point to regret 🔮',
-    'ONLY IF {{NAME}} GOES FIRST',
-    'Fortune favors the bold! GO!',
-    '{{NAME}} will never forgive you. Do it.',
-    'Three words: Don\'t. Do. It.',
-    'Certified bad idea. Certified fun. YES!',
+    'ABSOLUT INTE 🚫',
+    'JA OCH FILMA DET 📹',
+    'Bara om {{NAME}} betalar 💸',
+    'Fråga {{NAME}} först 🤔',
+    'Andarna säger… JA 🎱',
+    'HELVETES JA! 🔥',
+    'Kanske efter en drink till… 🍺',
+    'Ditt framtida jag säger NEJ 🚫',
+    'GRUPPEN KRÄVER DET 👥',
+    'Tecknen pekar mot ånger 🔮',
+    'BARA OM {{NAME}} GÅR FÖRST',
+    'Lyckan gynnar de modiga! KÖR!',
+    '{{NAME}} förlåter dig aldrig. Gör det.',
+    'Tre ord: Gör. Det. Inte.',
+    'Garanterat dålig idé. Garanterat kul. JA!',
   ],
-  log: [],             // { ts, text, photoDataUrl }
-  blameReasons: [
-    'Started it 🙄',
-    'Suggested the last round 🍺',
-    'Laughed at the wrong moment 😂',
-    'Pocket-dialed someone',
-    'Lost the game',
-    'Looked suspicious 👀',
-    'Was already smiling when asked',
-    'The vibe doesn\'t lie',
-    'Smelled guilty',
-    'Blamed someone else first — deflection!',
-  ],
-  blameTally: {},      // { playerName: count }
   recentPays: [],      // last 3 names picked for "pays"
-  recentBlame: [],     // last 3 names picked for "blame"
   paysExcluded: [],    // temp excludes for this round
-  wheelRotation: 0,    // current cumulative rotation in degrees
 };
 
 let state = {};
@@ -85,6 +73,13 @@ function loadState() {
     if (raw) {
       const saved = JSON.parse(raw);
       state = deepMerge(DEFAULTS, saved);
+      // Migrate: reset versioned arrays when state is from an older version
+      if ((saved.stateVersion || 0) < STATE_VERSION) {
+        state.players = deepClone(DEFAULTS.players);
+        state.wheelItems = deepClone(DEFAULTS.wheelItems);
+        state.stateVersion = STATE_VERSION;
+        saveState();
+      }
     } else {
       state = deepClone(DEFAULTS);
     }
@@ -266,14 +261,12 @@ function switchTab(tab) {
     b.setAttribute('aria-current', active ? 'page' : 'false');
   });
   // Render dynamic content
-  if (tab === 'score')    renderScore();
-  if (tab === 'log')      renderLog();
   if (tab === 'settings') renderSettings();
-  if (tab === 'wheel')    drawWheelFrame(state.wheelRotation || 0);
+  if (tab === 'wheel')    buildSlotTrack();
   if (tab === 'decision') {
     // Reset result so each visit feels fresh
     const el = document.getElementById('decision-result');
-    el.innerHTML = '<span class="result-placeholder">Ask the oracle…</span>';
+    el.innerHTML = '<span class="result-placeholder">Fråga oraklet…</span>';
     el.classList.remove('has-result');
   }
 }
@@ -285,8 +278,18 @@ function switchTab(tab) {
 let lastPaysPick = null;
 
 function pickPays(pool) {
+  const allPlayers = pool || state.players;
   const exclude = state.paysExcluded || [];
-  const name = weightedPick(pool || state.players, 'pays', exclude);
+  const eligible = allPlayers.filter(p => !exclude.includes(p));
+
+  if (!eligible.length) {
+    toast('⚠️ Alla är uteslutna – återställer!');
+    state.paysExcluded = [];
+    saveState();
+    renderPaysExcluded();
+  }
+
+  const name = weightedPick(allPlayers, 'pays', state.paysExcluded);
   lastPaysPick = name;
   updateRecent('pays', name);
 
@@ -315,7 +318,8 @@ function getRigNote(name) {
 function renderPaysExcluded() {
   const ex = state.paysExcluded || [];
   const el = document.getElementById('pays-excluded');
-  el.textContent = ex.length ? '🚫 Excluded: ' + ex.join(', ') : '';
+  el.textContent = ex.length ? '🚫 Uteslutna: ' + ex.join(', ') : '';
+  document.getElementById('btn-pays-reset').hidden = ex.length === 0;
 }
 
 function initPays() {
@@ -335,11 +339,25 @@ function initPays() {
     if (!lastPaysPick) return;
     if (!state.paysExcluded.includes(lastPaysPick)) {
       state.paysExcluded = [...(state.paysExcluded || []), lastPaysPick];
-      toast('🚫 ' + lastPaysPick + ' excluded this round');
+      toast('🚫 ' + lastPaysPick + ' utesluten!');
       saveState();
     }
     renderPaysExcluded();
     pickPays();
+  });
+  document.getElementById('btn-pays-reset').addEventListener('click', () => {
+    state.paysExcluded = [];
+    state.recentPays = [];
+    lastPaysPick = null;
+    saveState();
+    renderPaysExcluded();
+    document.getElementById('pays-result').innerHTML = '<span class="result-placeholder">Tryck på knappen!</span>';
+    document.getElementById('pays-result').classList.remove('has-result');
+    document.getElementById('pays-reason').textContent = '';
+    document.getElementById('btn-pays-reroll').disabled = true;
+    document.getElementById('btn-pays-exclude').disabled = true;
+    haptic([10, 20, 10]);
+    toast('🔁 Återställt – alla är med igen!');
   });
 }
 
@@ -349,6 +367,8 @@ function initPays() {
 
 function rollDecision() {
   const answers = state.decisionAnswers || DEFAULTS.decisionAnswers;
+  if (!answers.length) { toast('⚠️ Inga svar att välja bland!'); return; }
+
   let answer = answers[Math.floor(Math.random() * answers.length)];
 
   if (answer.includes('{{NAME}}')) {
@@ -357,7 +377,7 @@ function rollDecision() {
   }
 
   const el = document.getElementById('decision-result');
-  el.innerHTML = answer;
+  el.textContent = answer;
   el.classList.add('has-result');
   confetti(20);
   haptic([30, 20, 30]);
@@ -372,387 +392,93 @@ function initDecision() {
 }
 
 // ════════════════════════════════════════════════════════════════
-// WHEEL OF CONSEQUENCES
+// ENARMAD BANDIT (Slot Machine)
 // ════════════════════════════════════════════════════════════════
 
-const WHEEL_COLORS = [
-  '#7c3aed','#db2777','#ea580c','#d97706',
-  '#16a34a','#0891b2','#4f46e5','#be185d',
-  '#9a3412','#065f46',
-];
+const SLOT_ITEM_H = 90; // must match .slot-item height in CSS
+let slotSpinning = false;
 
-let wheelCanvas, wheelCtx;
-let wheelSpinning = false;
-
-function drawWheelFrame(rotDeg) {
-  if (!wheelCanvas) return;
+function buildSlotTrack() {
+  const track = document.getElementById('slot-track');
+  if (!track) return;
   const items = state.wheelItems;
-  const n = items.length;
-  const cx = wheelCanvas.width / 2;
-  const cy = wheelCanvas.height / 2;
-  const r  = cx - 4;
-  const rot = (rotDeg * Math.PI) / 180;
-
-  wheelCtx.clearRect(0, 0, wheelCanvas.width, wheelCanvas.height);
-
-  for (let i = 0; i < n; i++) {
-    const startAngle = rot + (i / n) * 2 * Math.PI - Math.PI / 2;
-    const endAngle   = rot + ((i + 1) / n) * 2 * Math.PI - Math.PI / 2;
-
-    // Segment
-    wheelCtx.beginPath();
-    wheelCtx.moveTo(cx, cy);
-    wheelCtx.arc(cx, cy, r, startAngle, endAngle);
-    wheelCtx.closePath();
-    wheelCtx.fillStyle = WHEEL_COLORS[i % WHEEL_COLORS.length];
-    wheelCtx.fill();
-    wheelCtx.strokeStyle = '#0d0d1a';
-    wheelCtx.lineWidth = 2;
-    wheelCtx.stroke();
-
-    // Label
-    const midAngle = (startAngle + endAngle) / 2;
-    const labelR = r * 0.65;
-    const lx = cx + labelR * Math.cos(midAngle);
-    const ly = cy + labelR * Math.sin(midAngle);
-
-    wheelCtx.save();
-    wheelCtx.translate(lx, ly);
-    wheelCtx.rotate(midAngle + Math.PI / 2);
-    wheelCtx.fillStyle = '#fff';
-    wheelCtx.font = `bold ${Math.max(10, Math.floor(r / n * 1.4))}px -apple-system, system-ui, sans-serif`;
-    wheelCtx.textAlign = 'center';
-    wheelCtx.textBaseline = 'middle';
-
-    // Truncate label if too long
-    const maxChars = Math.max(8, Math.floor(28 / n * 4));
-    const label = items[i].length > maxChars ? items[i].slice(0, maxChars - 1) + '…' : items[i];
-    wheelCtx.fillText(label, 0, 0);
-    wheelCtx.restore();
+  const reps = 8;
+  track.innerHTML = '';
+  for (let r = 0; r < reps; r++) {
+    items.forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'slot-item';
+      div.textContent = item;
+      track.appendChild(div);
+    });
   }
-
-  // Center cap
-  wheelCtx.beginPath();
-  wheelCtx.arc(cx, cy, 14, 0, 2 * Math.PI);
-  wheelCtx.fillStyle = '#0d0d1a';
-  wheelCtx.fill();
-  wheelCtx.strokeStyle = '#fff';
-  wheelCtx.lineWidth = 2;
-  wheelCtx.stroke();
+  track.style.transition = 'none';
+  track.style.transform = 'translateY(0)';
 }
 
-function spinWheel() {
-  if (wheelSpinning) return;
-  wheelSpinning = true;
+function spinSlot() {
+  if (slotSpinning) return;
+  const items = state.wheelItems;
+  if (!items || !items.length) { toast('⚠️ Inga alternativ att snurra!'); return; }
 
+  slotSpinning = true;
   const btn = document.getElementById('btn-wheel-spin');
   btn.disabled = true;
 
-  const items = state.wheelItems;
   const n = items.length;
-
-  // How much extra to spin: 5–9 full rotations + random angle
-  const extraSpins = 5 + Math.floor(Math.random() * 5);
-  const extraAngle = Math.random() * 360;
-  const totalDelta = extraSpins * 360 + extraAngle;
-  const finalRot   = (state.wheelRotation || 0) + totalDelta;
+  const winnerIdx = Math.floor(Math.random() * n);
+  // Land on winner in the 6th repetition (0-indexed) for a long satisfying spin
+  const targetPos = (6 * n + winnerIdx) * SLOT_ITEM_H;
+  const duration  = 3800 + Math.floor(Math.random() * 1200);
 
   playSoundWheel();
   haptic([10, 50, 10, 50, 10, 80, 20, 100, 300]);
 
-  // Animate with requestAnimationFrame using ease-out
-  const startRot  = state.wheelRotation || 0;
-  const startTime = performance.now();
-  const duration  = 3800 + Math.random() * 1200; // 3.8–5s
+  const track = document.getElementById('slot-track');
+  track.style.transition = 'none';
+  track.style.transform = 'translateY(0)';
 
-  function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
+  // Double rAF ensures the reset is painted before animation starts
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      track.style.transition = `transform ${duration}ms cubic-bezier(0.19, 1, 0.22, 1)`;
+      track.style.transform  = `translateY(-${targetPos}px)`;
+    });
+  });
 
-  function frame(now) {
-    const elapsed = now - startTime;
-    const progress = Math.min(elapsed / duration, 1);
-    const currentRot = startRot + totalDelta * easeOut(progress);
-    drawWheelFrame(currentRot);
+  setTimeout(() => {
+    const winner = items[winnerIdx];
+    document.getElementById('wheel-result').innerHTML = esc(winner);
+    document.getElementById('wheel-result').classList.add('has-result');
 
-    if (progress < 1) {
-      requestAnimationFrame(frame);
-    } else {
-      // Spin done — find winner
-      state.wheelRotation = finalRot % 360;
+    confetti(50);
+    haptic([50, 30, 50]);
+    playSoundWin();
+    toast('🎰 ' + winner.slice(0, 40));
+    saveState();
 
-      // Which segment is at top pointer?
-      // Segments drawn from -π/2 (top) clockwise.
-      // After total rotation R, pointer at top sees wheel's angle 0 - R (in wheel frame).
-      const norm = ((-(finalRot % 360)) % 360 + 360) % 360;
-      const segmentAngle = 360 / n;
-      const winnerIdx = Math.floor(norm / segmentAngle) % n;
-      const winner = items[winnerIdx];
+    slotSpinning = false;
+    btn.disabled = false;
 
-      document.getElementById('wheel-result').innerHTML = winner;
-      document.getElementById('wheel-result').classList.add('has-result');
-
-      confetti(50);
-      haptic([50, 30, 50]);
-      playSoundWin();
-      toast('🎡 ' + winner.slice(0, 40));
-
-      drawWheelFrame(state.wheelRotation);
-      saveState();
-
-      wheelSpinning = false;
-      btn.disabled = false;
-    }
-  }
-
-  requestAnimationFrame(frame);
+    // Silently snap to stable position (winner at top of first rep)
+    setTimeout(() => {
+      track.style.transition = 'none';
+      track.style.transform  = `translateY(-${winnerIdx * SLOT_ITEM_H}px)`;
+    }, 800);
+  }, duration + 150);
 }
 
 function initWheel() {
-  wheelCanvas = document.getElementById('wheel-canvas');
-  // Resize canvas to actual display size
-  const size = Math.min(300, window.innerWidth - 48);
-  wheelCanvas.width  = size;
-  wheelCanvas.height = size;
-  wheelCtx = wheelCanvas.getContext('2d');
-
-  drawWheelFrame(state.wheelRotation || 0);
-
+  buildSlotTrack();
   document.getElementById('btn-wheel-spin').addEventListener('click', () => {
     playSoundClick();
-    spinWheel();
-  });
-}
-
-// ════════════════════════════════════════════════════════════════
-// SCOREBOARD
-// ════════════════════════════════════════════════════════════════
-
-let selectedScorePlayer = null;
-
-function getPlayerTotal(name) {
-  const cats = state.scores[name] || {};
-  return Object.values(cats).reduce((a, b) => a + b, 0);
-}
-
-function renderScore() {
-  // Ensure scores have entries for all players
-  for (const p of state.players) {
-    if (!state.scores[p]) state.scores[p] = {};
-    for (const cat of state.scoreCategories) {
-      if (state.scores[p][cat] === undefined) state.scores[p][cat] = 0;
-    }
-  }
-
-  // Leaderboard
-  const sorted = [...state.players].sort((a, b) => getPlayerTotal(b) - getPlayerTotal(a));
-  const medals = ['🥇', '🥈', '🥉'];
-  const classes = ['gold', 'silver', 'bronze'];
-  const lbEl = document.getElementById('score-leaderboard');
-  lbEl.innerHTML = sorted.slice(0, 3).map((name, i) => `
-    <div class="leader-card ${classes[i]}">
-      <div class="leader-place">${medals[i]}</div>
-      <div class="leader-name">${name}</div>
-      <div class="leader-pts">${getPlayerTotal(name)} pts</div>
-    </div>
-  `).join('');
-
-  // Player selector tabs
-  if (!selectedScorePlayer || !state.players.includes(selectedScorePlayer)) {
-    selectedScorePlayer = state.players[0];
-  }
-  const tabsEl = document.getElementById('score-player-tabs');
-  tabsEl.innerHTML = state.players.map(p => `
-    <button class="player-tab-btn ${p === selectedScorePlayer ? 'active' : ''}"
-      data-player="${esc(p)}"
-      role="tab"
-      aria-selected="${p === selectedScorePlayer}"
-      aria-label="${esc(p)}">${esc(p)}</button>
-  `).join('');
-  tabsEl.querySelectorAll('.player-tab-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      selectedScorePlayer = btn.dataset.player;
-      playSoundClick();
-      renderScore();
-    });
-  });
-
-  // Categories for selected player
-  const catsEl = document.getElementById('score-categories');
-  catsEl.innerHTML = state.scoreCategories.map(cat => {
-    const val = (state.scores[selectedScorePlayer] || {})[cat] || 0;
-    return `
-    <div class="score-cat-row">
-      <span class="score-cat-label">${cat}</span>
-      <div class="score-cat-controls">
-        <button class="score-adj-btn" data-cat="${esc(cat)}" data-delta="-1" aria-label="Remove point from ${esc(cat)}">−</button>
-        <span class="score-cat-val">${val}</span>
-        <button class="score-adj-btn" data-cat="${esc(cat)}" data-delta="1" aria-label="Add point to ${esc(cat)}">+</button>
-      </div>
-    </div>`;
-  }).join('');
-
-  catsEl.querySelectorAll('.score-adj-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const cat   = btn.dataset.cat;
-      const delta = parseInt(btn.dataset.delta, 10);
-      if (!state.scores[selectedScorePlayer]) state.scores[selectedScorePlayer] = {};
-      const cur = state.scores[selectedScorePlayer][cat] || 0;
-      state.scores[selectedScorePlayer][cat] = Math.max(0, cur + delta);
-      if (delta > 0) { confetti(10); haptic([15]); playSoundClick(); }
-      saveState();
-      renderScore();
-    });
-  });
-}
-
-function copyScoreResults() {
-  const sorted = [...state.players].sort((a, b) => getPlayerTotal(b) - getPlayerTotal(a));
-  let text = '🏆 Bachelor Party Scoreboard 🏆\n\n';
-  sorted.forEach((p, i) => {
-    const medal = ['🥇','🥈','🥉'][i] || '  ';
-    text += `${medal} ${p}: ${getPlayerTotal(p)} pts\n`;
-    for (const cat of state.scoreCategories) {
-      const v = (state.scores[p] || {})[cat] || 0;
-      if (v) text += `   ${cat}: ${v}\n`;
-    }
-    text += '\n';
-  });
-  text += '\n🎩 Generated by Bachelor Control Panel';
-
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(text).then(() => toast('📋 Copied!'));
-  } else {
-    const ta = document.createElement('textarea');
-    ta.value = text; document.body.appendChild(ta);
-    ta.select(); document.execCommand('copy');
-    ta.remove(); toast('📋 Copied!');
-  }
-}
-
-function initScore() {
-  document.getElementById('btn-score-copy').addEventListener('click', () => {
-    playSoundClick(); copyScoreResults();
-  });
-  document.getElementById('btn-score-reset').addEventListener('click', () => {
-    if (!confirm('Reset ALL scores? This cannot be undone.')) return;
-    state.scores = {};
-    saveState();
-    toast('🗑️ Scores reset');
-    renderScore();
+    spinSlot();
   });
 }
 
 // ════════════════════════════════════════════════════════════════
 // NIGHT LOG
 // ════════════════════════════════════════════════════════════════
-
-let pendingPhotoDataUrl = null;
-
-function compressPhoto(file, cb) {
-  const reader = new FileReader();
-  reader.onload = e => {
-    const img = new Image();
-    img.onload = () => {
-      const MAX = 800;
-      const scale = Math.min(1, MAX / Math.max(img.width, img.height));
-      const c = document.createElement('canvas');
-      c.width  = Math.round(img.width  * scale);
-      c.height = Math.round(img.height * scale);
-      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
-      cb(c.toDataURL('image/jpeg', 0.72));
-    };
-    img.src = e.target.result;
-  };
-  reader.readAsDataURL(file);
-}
-
-function renderLog() {
-  const el = document.getElementById('log-entries');
-  const entries = (state.log || []).slice().reverse(); // newest first
-  if (!entries.length) {
-    el.innerHTML = '<div class="empty-state">Nothing logged yet 👀</div>';
-    return;
-  }
-  el.innerHTML = entries.map(entry => `
-    <div class="log-entry">
-      <div class="log-entry-ts">${formatTs(entry.ts)}</div>
-      <div class="log-entry-text">${esc(entry.text)}</div>
-      ${entry.photoDataUrl ? `<img src="${entry.photoDataUrl}" alt="Log photo" loading="lazy">` : ''}
-    </div>
-  `).join('');
-}
-
-function formatTs(ts) {
-  const d = new Date(ts);
-  return d.toLocaleDateString('sv-SE') + ' ' + d.toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' });
-}
-
-function addLogEntry(text, photo) {
-  if (!text.trim() && !photo) return;
-  state.log = state.log || [];
-  state.log.push({ ts: Date.now(), text: text.trim(), photoDataUrl: photo || null });
-  saveState();
-  toast('✍️ Logged!');
-  haptic([20]);
-  playSoundClick();
-}
-
-function exportLog() {
-  const entries = state.log || [];
-  if (!entries.length) { toast('📝 Log is empty!'); return; }
-  let text = '📝 BACHELOR PARTY NIGHT LOG 📝\n';
-  text += '='.repeat(40) + '\n\n';
-  entries.forEach(e => {
-    text += `[${formatTs(e.ts)}]\n${e.text}\n`;
-    if (e.photoDataUrl) text += '(photo attached)\n';
-    text += '\n';
-  });
-  text += '🎩 Exported from Bachelor Control Panel';
-
-  const blob = new Blob([text], { type: 'text/plain' });
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href = url; a.download = 'bachelor-night-log.txt';
-  a.click(); URL.revokeObjectURL(url);
-  toast('📤 Log exported!');
-}
-
-function initLog() {
-  const photoInput = document.getElementById('log-photo-input');
-  const photoThumb = document.getElementById('log-photo-thumb');
-  const photoName  = document.getElementById('log-photo-name');
-
-  photoInput.addEventListener('change', () => {
-    const file = photoInput.files[0];
-    if (!file) return;
-    photoName.textContent = file.name.slice(0, 20);
-    compressPhoto(file, dataUrl => {
-      pendingPhotoDataUrl = dataUrl;
-      photoThumb.innerHTML = `<img src="${dataUrl}" alt="Preview">`;
-    });
-  });
-
-  document.getElementById('btn-log-add').addEventListener('click', () => {
-    const text = document.getElementById('log-text').value;
-    if (!text.trim() && !pendingPhotoDataUrl) { toast('✏️ Write something first!'); return; }
-    addLogEntry(text, pendingPhotoDataUrl);
-    document.getElementById('log-text').value = '';
-    photoInput.value = '';
-    photoName.textContent = '';
-    photoThumb.innerHTML = '';
-    pendingPhotoDataUrl = null;
-    renderLog();
-  });
-
-  document.getElementById('btn-log-export').addEventListener('click', exportLog);
-
-  document.getElementById('btn-log-clear').addEventListener('click', () => {
-    if (!confirm('Clear all log entries?')) return;
-    state.log = [];
-    saveState();
-    toast('🗑️ Log cleared');
-    renderLog();
-  });
-}
 
 // ════════════════════════════════════════════════════════════════
 // SETTINGS
@@ -762,42 +488,39 @@ function renderSettings() {
   const el = document.getElementById('settings-content');
 
   el.innerHTML = `
-    <!-- Players -->
+    <!-- Spelare -->
     <div class="setting-card">
-      <label>👥 Players</label>
+      <label>👥 Spelare</label>
       <div class="players-list" id="settings-players-list"></div>
-      <button id="btn-add-player" class="btn-secondary btn-sm" style="margin-top:.5rem">+ Add Player</button>
+      <div class="player-add-row">
+        <input type="text" id="settings-new-player" placeholder="Namn…" aria-label="Nytt spelarnamn">
+        <button id="btn-add-player" class="btn-secondary btn-sm">+ Lägg till</button>
+      </div>
     </div>
 
-    <!-- Bachelor name -->
+    <!-- Bachelorns namn -->
     <div class="setting-card">
-      <label>🎩 Bachelor Name</label>
+      <label>🎩 Bachelorns namn</label>
       <input type="text" id="settings-bachelor" value="${esc(state.bachelorName)}" placeholder="Bachelor">
     </div>
 
-    <!-- Wheel items -->
+    <!-- Bandit-alternativ -->
     <div class="setting-card">
-      <label>🎡 Wheel Items (one per line)</label>
+      <label>🎰 Bandit-alternativ (ett per rad)</label>
       <textarea id="settings-wheel-items">${state.wheelItems.join('\n')}</textarea>
     </div>
 
-    <!-- Score categories -->
-    <div class="setting-card">
-      <label>🏆 Score Categories (one per line)</label>
-      <textarea id="settings-score-cats">${state.scoreCategories.join('\n')}</textarea>
-    </div>
-
-    <!-- Toggles -->
+    <!-- Ljud & Vibration -->
     <div class="setting-card">
       <div class="setting-row">
-        <span>🔊 Sounds</span>
+        <span>🔊 Ljud</span>
         <label class="toggle-switch">
           <input type="checkbox" id="settings-sounds" ${state.soundsOn ? 'checked' : ''}>
           <span class="toggle-track"></span>
         </label>
       </div>
-      <div class="setting-row" style="margin-top:.75rem">
-        <span>📳 Haptics</span>
+      <div class="setting-row">
+        <span>📳 Vibration</span>
         <label class="toggle-switch">
           <input type="checkbox" id="settings-haptics" ${state.hapticsOn ? 'checked' : ''}>
           <span class="toggle-track"></span>
@@ -805,9 +528,9 @@ function renderSettings() {
       </div>
     </div>
 
-    <!-- Party mode -->
+    <!-- Kaosläge -->
     <div class="setting-card">
-      <label>🔥 Party Mode (chaos level)</label>
+      <label>🔥 Kaosläge</label>
       <div class="party-slider">
         <span>😇</span>
         <input type="range" id="settings-party" min="0" max="5" step="1" value="${state.partyModeLevel}">
@@ -816,12 +539,12 @@ function renderSettings() {
       </div>
     </div>
 
-    <!-- Reset -->
+    <!-- Farlig zon -->
     <div class="setting-card">
-      <label>⚠️ Danger Zone</label>
+      <label>⚠️ Farlig zon</label>
       <div class="btn-group">
-        <button id="btn-reset-paysexclude" class="btn-secondary btn-sm">🔄 Clear Pay Excludes</button>
-        <button id="btn-factory-reset" class="btn-danger btn-sm">💥 Factory Reset</button>
+        <button id="btn-reset-paysexclude" class="btn-secondary btn-sm">🔄 Återställ betalning</button>
+        <button id="btn-factory-reset" class="btn-danger btn-sm">💥 Fabriksåterställning</button>
       </div>
     </div>
   `;
@@ -830,14 +553,15 @@ function renderSettings() {
   renderSettingsPlayersList();
 
   document.getElementById('btn-add-player').addEventListener('click', () => {
-    const name = prompt('Player name:');
-    if (!name || !name.trim()) return;
-    state.players.push(name.trim());
-    if (!state.weights[name.trim()]) { /* use default 1.0 */ }
+    const input = document.getElementById('settings-new-player');
+    const name = input.value.trim();
+    if (!name) { toast('✏️ Ange ett namn!'); return; }
+    state.players.push(name);
     saveState();
+    input.value = '';
     renderSettingsPlayersList();
     updateRigPanel();
-    toast('👤 Added ' + name.trim());
+    toast('👤 Lade till ' + name);
   });
 
   document.getElementById('settings-bachelor').addEventListener('change', e => {
@@ -848,18 +572,17 @@ function renderSettings() {
     if (idx !== -1) state.players[idx] = nw;
     if (state.weights[old] !== undefined) { state.weights[nw] = state.weights[old]; delete state.weights[old]; }
     state.bachelorName = nw;
-    saveState(); toast('✅ Saved');
+    saveState(); toast('✅ Sparat');
   });
 
   const saveTextarea = (id, key, splitFn) => {
     document.getElementById(id).addEventListener('change', e => {
       state[key] = splitFn(e.target.value);
-      saveState(); toast('✅ Saved');
+      saveState(); toast('✅ Sparat');
     });
   };
 
   saveTextarea('settings-wheel-items',  'wheelItems',      v => v.split('\n').map(s=>s.trim()).filter(Boolean));
-  saveTextarea('settings-score-cats',   'scoreCategories', v => v.split('\n').map(s=>s.trim()).filter(Boolean));
 
   document.getElementById('settings-sounds').addEventListener('change', e => {
     state.soundsOn = e.target.checked;
@@ -880,12 +603,17 @@ function renderSettings() {
   });
 
   document.getElementById('btn-reset-paysexclude').addEventListener('click', () => {
-    state.paysExcluded = []; saveState();
-    document.getElementById('pays-excluded').textContent = '';
-    toast('✅ Pay excludes cleared');
+    state.paysExcluded = [];
+    state.recentPays = [];
+    lastPaysPick = null;
+    saveState();
+    renderPaysExcluded();
+    document.getElementById('btn-pays-reroll').disabled = true;
+    document.getElementById('btn-pays-exclude').disabled = true;
+    toast('🔁 Återställt – alla är med igen!');
   });
   document.getElementById('btn-factory-reset').addEventListener('click', () => {
-    if (!confirm('FACTORY RESET? This deletes EVERYTHING including the log.')) return;
+    if (!confirm('FABRIKSÅTERSTÄLLNING? Detta raderar ALLT.')) return;
     localStorage.removeItem(STATE_KEY);
     location.reload();
   });
@@ -911,18 +639,18 @@ function renderSettingsPlayersList() {
       // Update weights key
       if (state.weights[old] !== undefined) { state.weights[nw] = state.weights[old]; delete state.weights[old]; }
       if (state.bachelorName === old) state.bachelorName = nw;
-      saveState(); toast('✅ Saved'); updateRigPanel();
+      saveState(); toast('✅ Sparat'); updateRigPanel();
     });
   });
 
   list.querySelectorAll('.remove-player-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const idx = parseInt(btn.dataset.index, 10);
-      if (state.players.length <= 2) { toast('❌ Need at least 2 players'); return; }
+      if (state.players.length <= 2) { toast('❌ Minst 2 spelare krävs'); return; }
       const removed = state.players.splice(idx, 1)[0];
       delete state.weights[removed];
       saveState(); renderSettingsPlayersList(); updateRigPanel();
-      toast('🗑️ Removed ' + removed);
+      toast('🗑️ Tog bort ' + removed);
     });
   });
 }
@@ -943,7 +671,7 @@ function initRiggedMode() {
       panel.hidden = false;
       updateRigPanel();
       haptic([20, 50, 20]);
-      toast('🎛️ Rigging panel unlocked');
+      toast('🎛️ Riggning upplåst');
     }, 800);
   };
   const cancelPress = () => { clearTimeout(rigPressTimer); };
@@ -958,7 +686,7 @@ function initRiggedMode() {
     state.riggedMode = e.target.checked;
     document.getElementById('rigged-badge').hidden = !state.riggedMode;
     saveState();
-    toast(state.riggedMode ? '🎛️ Rigging enabled' : '✅ Rigging off');
+    toast(state.riggedMode ? '🎛️ Riggning aktiverad' : '✅ Riggning av');
   });
 
   document.getElementById('btn-rig-close').addEventListener('click', () => {
@@ -1009,6 +737,11 @@ function initNav() {
       switchTab(btn.dataset.tab);
     });
   });
+  document.getElementById('btn-settings').addEventListener('click', () => {
+    playSoundClick();
+    haptic([10]);
+    switchTab('settings');
+  });
 }
 
 // ════════════════════════════════════════════════════════════════
@@ -1042,8 +775,6 @@ function init() {
   initNav();
   initPays();
   initWheel();
-  initScore();
-  initLog();
   initDecision();
   initRiggedMode();
 

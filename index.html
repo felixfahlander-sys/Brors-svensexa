@@ -20,7 +20,8 @@
     <div id="header-inner">
       <span id="app-title">🎩 Pontus Sexa</span>
       <div id="header-right">
-        <span id="rigged-badge" hidden aria-label="Rigged mode is active">🎛️ Rigged</span>
+        <span id="rigged-badge" hidden aria-label="Riggning är aktiv">🎛️ Riggad</span>
+        <button id="btn-settings" aria-label="Inställningar">⚙️</button>
       </div>
     </div>
     <!-- Hidden rigging panel, revealed by long-press on header title -->
@@ -42,83 +43,54 @@
   <main id="main" role="main">
 
     <!-- TAB: Who Pays? -->
-    <section id="tab-pays" class="tab-panel active" aria-label="Who Pays">
-      <h2>💸 Who Pays?</h2>
+    <section id="tab-pays" class="tab-panel active" aria-label="Vem betalar">
+      <h2>💳 Vem betalar?</h2>
       <div id="pays-result" class="result-box" aria-live="polite" aria-atomic="true">
-        <span class="result-placeholder">Press the button!</span>
+        <span class="result-placeholder">Tryck på knappen!</span>
       </div>
       <div id="pays-reason" class="result-reason"></div>
       <div class="btn-group">
-        <button id="btn-pays-pick" class="btn-primary btn-xl">🎲 Pick!</button>
-        <button id="btn-pays-reroll" class="btn-secondary" disabled aria-label="Reroll">🔄 Reroll</button>
-        <button id="btn-pays-exclude" class="btn-secondary" disabled aria-label="Exclude this person once">🚫 Exclude</button>
+        <button id="btn-pays-pick" class="btn-primary btn-xl">🎲 Välj!</button>
+        <button id="btn-pays-reroll" class="btn-secondary" disabled aria-label="Rulla igen">🔄 Rulla igen</button>
+        <button id="btn-pays-exclude" class="btn-secondary" disabled aria-label="Uteslut den här personen">🚫 Uteslut</button>
       </div>
-      <div id="pays-excluded" class="excluded-list" aria-label="Excluded players" aria-live="polite"></div>
+      <div id="pays-excluded" class="excluded-list" aria-label="Uteslutna spelare" aria-live="polite"></div>
+      <button id="btn-pays-reset" class="btn-danger btn-sm pays-reset-btn" hidden aria-label="Återställ omgången">🔁 Återställ omgången</button>
     </section>
 
-    <!-- TAB: Wheel of Consequences -->
-    <section id="tab-wheel" class="tab-panel" aria-label="Wheel of Consequences" hidden>
-      <h2>🎡 Wheel of Fate</h2>
-      <div id="wheel-wrap">
-        <div id="wheel-pointer" aria-hidden="true">▼</div>
-        <canvas id="wheel-canvas" width="300" height="300" role="img" aria-label="Spinning wheel of consequences"></canvas>
+    <!-- TAB: Enarmad Bandit -->
+    <section id="tab-wheel" class="tab-panel" aria-label="Enarmad Bandit" hidden>
+      <h2>🎰 Enarmad Bandit</h2>
+      <div id="slot-machine">
+        <div id="slot-window" aria-label="Slotmaskin">
+          <div id="slot-track"></div>
+          <div class="slot-lines" aria-hidden="true"></div>
+        </div>
       </div>
       <div id="wheel-result" class="result-box" aria-live="polite" aria-atomic="true">
-        <span class="result-placeholder">Spin the wheel!</span>
+        <span class="result-placeholder">Snurra hjulet!</span>
       </div>
       <div class="btn-group">
-        <button id="btn-wheel-spin" class="btn-primary btn-xl">🌀 SPIN!</button>
+        <button id="btn-wheel-spin" class="btn-primary btn-xl">🎰 Snurra!</button>
       </div>
     </section>
 
-    <!-- TAB: Scoreboard -->
-    <section id="tab-score" class="tab-panel" aria-label="Scoreboard" hidden>
-      <h2>🏆 Scoreboard</h2>
-      <div id="score-leaderboard" class="leaderboard" aria-label="Top 3 players" aria-live="polite"></div>
-      <div id="score-player-tabs" class="player-tabs" role="tablist" aria-label="Select player"></div>
-      <div id="score-categories" class="score-categories" aria-live="polite"></div>
-      <div class="btn-group" style="margin-top:1rem">
-        <button id="btn-score-copy" class="btn-secondary">📋 Copy Results</button>
-        <button id="btn-score-reset" class="btn-danger">🗑️ Reset</button>
-      </div>
-    </section>
 
-    <!-- TAB: Night Log -->
-    <section id="tab-log" class="tab-panel" aria-label="Night Log" hidden>
-      <h2>📝 Night Log</h2>
-      <div class="log-input-card">
-        <textarea id="log-text" placeholder="What just happened? 👀" rows="3" aria-label="Log entry text"></textarea>
-        <div class="log-actions-row">
-          <label class="btn-secondary btn-sm photo-label" for="log-photo-input" tabindex="0" role="button" aria-label="Attach photo">
-            📷 Photo
-          </label>
-          <input type="file" id="log-photo-input" accept="image/*" capture="environment" hidden aria-label="Photo file input">
-          <span id="log-photo-name" class="photo-name"></span>
-          <button id="btn-log-add" class="btn-primary" style="margin-left:auto">✍️ Log It!</button>
-        </div>
-        <div id="log-photo-thumb" class="photo-thumb-preview"></div>
-      </div>
-      <div id="log-entries" class="log-list" aria-label="Night log entries" aria-live="polite"></div>
-      <div class="btn-group">
-        <button id="btn-log-export" class="btn-secondary">📤 Export Log</button>
-        <button id="btn-log-clear" class="btn-danger">🗑️ Clear Log</button>
-      </div>
-    </section>
 
-    <!-- TAB: Should We Do This? -->
-    <section id="tab-decision" class="tab-panel" aria-label="Should We Do This" hidden>
-      <h2>🤔 Should We?</h2>
+    <!-- TAB: Ska vi? -->
+    <section id="tab-decision" class="tab-panel" aria-label="Ska vi göra det här" hidden>
+      <h2>🤔 Ska vi?</h2>
       <div id="decision-result" class="result-box decision-result-box" aria-live="polite" aria-atomic="true">
-        <span class="result-placeholder">Ask the oracle…</span>
+        <span class="result-placeholder">Fråga oraklet…</span>
       </div>
       <div class="btn-group">
-        <button id="btn-decision-roll" class="btn-primary btn-xl">🎲 Decide!</button>
+        <button id="btn-decision-roll" class="btn-primary btn-xl">🎲 Avgör!</button>
       </div>
     </section>
 
-    <!-- TAB: Settings -->
-    <section id="tab-settings" class="tab-panel" aria-label="Settings" hidden>
-      <h2>⚙️ Settings</h2>
+    <!-- TAB: Inställningar -->
+    <section id="tab-settings" class="tab-panel" aria-label="Inställningar" hidden>
+      <h2>⚙️ Inställningar</h2>
       <div id="settings-content" class="settings-list"></div>
     </section>
 
@@ -126,29 +98,17 @@
 
   <!-- ═══════════════════════════ BOTTOM NAV ═══════════════════════════ -->
   <nav id="bottom-nav" role="navigation" aria-label="Main navigation">
-    <button class="nav-btn active" data-tab="pays" aria-label="Who Pays" aria-current="page">
-      <span class="nav-icon">💸</span>
-      <span class="nav-label">Pays</span>
+    <button class="nav-btn active" data-tab="pays" aria-label="Vem betalar" aria-current="page">
+      <span class="nav-icon">💳</span>
+      <span class="nav-label">Betalar</span>
     </button>
-    <button class="nav-btn" data-tab="wheel" aria-label="Wheel">
-      <span class="nav-icon">🎡</span>
-      <span class="nav-label">Wheel</span>
+    <button class="nav-btn" data-tab="wheel" aria-label="Enarmad Bandit">
+      <span class="nav-icon">🎰</span>
+      <span class="nav-label">Bandit</span>
     </button>
-    <button class="nav-btn" data-tab="score" aria-label="Scoreboard">
-      <span class="nav-icon">🏆</span>
-      <span class="nav-label">Score</span>
-    </button>
-    <button class="nav-btn" data-tab="log" aria-label="Night Log">
-      <span class="nav-icon">📝</span>
-      <span class="nav-label">Log</span>
-    </button>
-    <button class="nav-btn" data-tab="decision" aria-label="Should We Do This">
+    <button class="nav-btn" data-tab="decision" aria-label="Ska vi göra det här">
       <span class="nav-icon">🤔</span>
-      <span class="nav-label">Should we?</span>
-    </button>
-    <button class="nav-btn" data-tab="settings" aria-label="Settings">
-      <span class="nav-icon">⚙️</span>
-      <span class="nav-label">Setup</span>
+      <span class="nav-label">Ska vi?</span>
     </button>
   </nav>
 
