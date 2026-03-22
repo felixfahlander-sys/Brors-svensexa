@@ -440,6 +440,20 @@ button:disabled { opacity: .28; pointer-events: none; }
 .setting-card textarea:focus { outline: none; border-color: var(--tc); }
 .setting-card textarea { resize: vertical; min-height: 90px; }
 
+.url-share-row { margin-top: .25rem; }
+.settings-url-text {
+  display: block;
+  font-size: .8rem;
+  color: var(--text-sub);
+  word-break: break-all;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: .5rem .75rem;
+  font-family: monospace;
+}
+.url-share-btn-group { margin-top: .5rem; }
+
 .setting-row {
   display: flex; align-items: center; justify-content: space-between; gap: 1rem;
 }

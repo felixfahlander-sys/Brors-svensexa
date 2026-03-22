@@ -539,6 +539,18 @@ function renderSettings() {
       </div>
     </div>
 
+    <!-- Öppna på telefonen -->
+    <div class="setting-card">
+      <label>📱 Öppna på telefonen</label>
+      <div class="url-share-row">
+        <span id="settings-url" class="settings-url-text"></span>
+      </div>
+      <div class="btn-group url-share-btn-group">
+        <button id="btn-copy-url" class="btn-secondary">📋 Kopiera länk</button>
+        <button id="btn-share-url" class="btn-secondary">🔗 Dela länk</button>
+      </div>
+    </div>
+
     <!-- Farlig zon -->
     <div class="setting-card">
       <label>⚠️ Farlig zon</label>
@@ -601,6 +613,30 @@ function renderSettings() {
     document.getElementById('party-val').textContent = state.partyModeLevel;
     saveState();
   });
+
+  // URL sharing
+  const urlEl = document.getElementById('settings-url');
+  urlEl.textContent = window.location.href;
+
+  document.getElementById('btn-copy-url').addEventListener('click', () => {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(window.location.href)
+        .then(() => toast('📋 Länk kopierad!'))
+        .catch(() => toast('❌ Kunde inte kopiera'));
+    } else {
+      toast('❌ Kunde inte kopiera');
+    }
+  });
+
+  const shareBtn = document.getElementById('btn-share-url');
+  if (navigator.share) {
+    shareBtn.addEventListener('click', () => {
+      navigator.share({ title: 'Svensexaappen', url: window.location.href })
+        .catch(() => {});
+    });
+  } else {
+    shareBtn.hidden = true;
+  }
 
   document.getElementById('btn-reset-paysexclude').addEventListener('click', () => {
     state.paysExcluded = [];
