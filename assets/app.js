@@ -263,6 +263,10 @@ function switchTab(tab) {
   // Render dynamic content
   if (tab === 'settings') renderSettings();
   if (tab === 'wheel')    buildSlotTrack();
+  if (tab === 'bomb' && bombExploded) {
+    document.getElementById('bomb-game-panel').hidden    = true;
+    document.getElementById('bomb-explode-panel').hidden = false;
+  }
   if (tab === 'decision') {
     // Reset result so each visit feels fresh
     const el = document.getElementById('decision-result');
@@ -473,6 +477,171 @@ function initWheel() {
   document.getElementById('btn-wheel-spin').addEventListener('click', () => {
     playSoundClick();
     spinSlot();
+  });
+}
+
+// ════════════════════════════════════════════════════════════════
+// BOMBEN
+// ════════════════════════════════════════════════════════════════
+
+// Themes unlocked progressively with partyModeLevel
+const BOMB_THEME_POOLS = [
+  // Level 0 — helt SFW
+  ['Bilmärken', 'Länder i Europa', 'Svenska städer', 'Djur', 'Frukter',
+   'Sportgrenar', 'Maträtter', 'Musikartister', 'Filmer', 'Yrken',
+   'Länder i världen', 'Fotbollsklubbar'],
+  // Level 1
+  ['Ölsorter', 'Drinkar', 'Saker man gör full',
+   'Ursäkter att slippa jobbet', 'Saker som är bättre berusad'],
+  // Level 2
+  ['Svordomar', 'Saker som luktar illa', 'Cringe-minnen från tonåren',
+   'Saker man skämts för', 'Dåliga pickup-lines'],
+  // Level 3
+  ['Smeknamn för snoppen', 'Smeknamn för fittan',
+   'Saker som liknar en snopp', 'Saker man googlar i smyg',
+   'Saker man inte erkänner att man tittar på'],
+  // Level 4
+  ['Sexställningar', 'Porrkategorier',
+   'Saker man kan använda som dildo', 'Ovanliga platser att ha sex',
+   'Saker som finns i en sexlåda'],
+  // Level 5
+  ['Saker att knulla om man var ensam på en ö',
+   'Märkliga fetischer', 'Saker man kan använda på sig själv',
+   'Ovanliga sexleksaker', 'Saker som låter som sexljud'],
+];
+
+let bombTickTimer = null;
+let bombRunning   = false;
+let bombExploded  = false;
+let bombEndTime   = 0;
+let bombCurrentTheme = '';
+
+function getBombThemes() {
+  const level = Math.min(state.partyModeLevel || 0, BOMB_THEME_POOLS.length - 1);
+  let pool = [];
+  for (let i = 0; i <= level; i++) pool = pool.concat(BOMB_THEME_POOLS[i]);
+  return pool;
+}
+
+function playTick(fast) {
+  playTone(fast ? 1200 : 900, 0.04, 'square', 0.18);
+}
+
+function playExplosion() {
+  if (!state.soundsOn) return;
+  try {
+    const ctx = getAudioCtx();
+    // Low thump
+    const osc = ctx.createOscillator();
+    const g1  = ctx.createGain();
+    osc.connect(g1); g1.connect(ctx.destination);
+    osc.frequency.setValueAtTime(100, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(28, ctx.currentTime + 0.45);
+    g1.gain.setValueAtTime(0.7, ctx.currentTime);
+    g1.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.45);
+    osc.start(); osc.stop(ctx.currentTime + 0.45);
+    // Noise burst
+    const buf  = ctx.createBuffer(1, ctx.sampleRate * 0.55, ctx.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+    const src    = ctx.createBufferSource();
+    src.buffer   = buf;
+    const filt   = ctx.createBiquadFilter();
+    filt.type    = 'lowpass';
+    filt.frequency.value = 700;
+    const g2 = ctx.createGain();
+    g2.gain.setValueAtTime(0.45, ctx.currentTime);
+    g2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.55);
+    src.connect(filt); filt.connect(g2); g2.connect(ctx.destination);
+    src.start();
+  } catch (_) {}
+}
+
+function setBombShake(remaining) {
+  const el = document.getElementById('bomb-emoji');
+  if (!el) return;
+  if (remaining < 5000)       el.className = 'bomb-emoji bomb-shake-intense';
+  else if (remaining < 10000) el.className = 'bomb-emoji bomb-shake-medium';
+  else if (remaining < 20000) el.className = 'bomb-emoji bomb-shake-light';
+  else                        el.className = 'bomb-emoji bomb-pulse';
+}
+
+function explodeBomb() {
+  bombRunning  = false;
+  bombExploded = true;
+  clearTimeout(bombTickTimer);
+  playExplosion();
+  haptic([100, 50, 100, 50, 250]);
+  confetti(80);
+  const gamePanel    = document.getElementById('bomb-game-panel');
+  const explodePanel = document.getElementById('bomb-explode-panel');
+  if (gamePanel)    gamePanel.hidden    = true;
+  if (explodePanel) explodePanel.hidden = false;
+}
+
+function bombTick() {
+  if (!bombRunning) return;
+  const remaining = bombEndTime - Date.now();
+  if (remaining <= 0) { explodeBomb(); return; }
+
+  const veryFast = remaining < 5000;
+  const fast     = remaining < 10000;
+  playTick(fast);
+  if (veryFast)    haptic([30, 10, 30]);
+  else if (fast)   haptic([15]);
+  else             haptic([8]);
+  setBombShake(remaining);
+
+  bombTickTimer = setTimeout(bombTick, veryFast ? 350 : fast ? 600 : 1000);
+}
+
+function startBomb() {
+  if (bombRunning) return;
+  const themes = getBombThemes();
+  bombCurrentTheme = themes[Math.floor(Math.random() * themes.length)];
+  // Random duration 20 – 60 seconds (unknown to players)
+  const duration = (20 + Math.floor(Math.random() * 41)) * 1000;
+  bombEndTime  = Date.now() + duration;
+  bombRunning  = true;
+  bombExploded = false;
+
+  const themeEl = document.getElementById('bomb-theme');
+  if (themeEl) themeEl.textContent = bombCurrentTheme;
+  document.getElementById('btn-bomb-start').hidden = true;
+  document.getElementById('btn-bomb-stop').hidden  = false;
+  const bombEl = document.getElementById('bomb-emoji');
+  if (bombEl) bombEl.className = 'bomb-emoji bomb-pulse';
+
+  haptic([20, 50, 20]);
+  bombTickTimer = setTimeout(bombTick, 1000);
+}
+
+function stopBomb() {
+  bombRunning = false;
+  clearTimeout(bombTickTimer);
+  document.getElementById('btn-bomb-start').hidden = false;
+  document.getElementById('btn-bomb-stop').hidden  = true;
+  const bombEl = document.getElementById('bomb-emoji');
+  if (bombEl) bombEl.className = 'bomb-emoji';
+  const themeEl = document.getElementById('bomb-theme');
+  if (themeEl) themeEl.textContent = '–';
+}
+
+function initBomb() {
+  document.getElementById('btn-bomb-start').addEventListener('click', () => {
+    playSoundClick();
+    startBomb();
+  });
+  document.getElementById('btn-bomb-stop').addEventListener('click', () => {
+    playSoundClick();
+    stopBomb();
+  });
+  document.getElementById('btn-bomb-restart').addEventListener('click', () => {
+    playSoundClick();
+    bombExploded = false;
+    document.getElementById('bomb-game-panel').hidden    = false;
+    document.getElementById('bomb-explode-panel').hidden = true;
+    stopBomb();
   });
 }
 
@@ -775,6 +944,7 @@ function init() {
   initNav();
   initPays();
   initWheel();
+  initBomb();
   initDecision();
   initRiggedMode();
 

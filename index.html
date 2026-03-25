@@ -77,6 +77,40 @@
 
 
 
+    <!-- TAB: Bomben -->
+    <section id="tab-bomb" class="tab-panel" aria-label="Bomben" hidden>
+      <h2>💣 Bomben</h2>
+
+      <div id="bomb-game-panel">
+        <div class="bomb-theme-card">
+          <div class="bomb-theme-label">Nämn en:</div>
+          <div class="bomb-theme-name" id="bomb-theme">–</div>
+        </div>
+
+        <div class="bomb-display">
+          <span class="bomb-emoji" id="bomb-emoji">💣</span>
+        </div>
+
+        <p class="bomb-instructions">Säg ett svar och passa mobilen vidare. Den som håller den när bomben smäller — DRICKER!</p>
+
+        <div class="btn-group">
+          <button id="btn-bomb-start" class="btn-primary btn-xl">🔥 Tänd luntan!</button>
+          <button id="btn-bomb-stop" class="btn-secondary" hidden>⏹ Avbryt</button>
+        </div>
+      </div>
+
+      <div id="bomb-explode-panel" hidden>
+        <div class="bomb-explode-display">
+          <div class="bomb-explode-emoji">💥</div>
+          <div class="bomb-explode-text">BOOM!</div>
+          <div class="bomb-explode-sub">Du håller bomben — DRICK!</div>
+        </div>
+        <div class="btn-group">
+          <button id="btn-bomb-restart" class="btn-primary btn-xl">🔄 Ny omgång</button>
+        </div>
+      </div>
+    </section>
+
     <!-- TAB: Ska vi? -->
     <section id="tab-decision" class="tab-panel" aria-label="Ska vi göra det här" hidden>
       <h2>🤔 Ska vi?</h2>
@@ -105,6 +139,10 @@
     <button class="nav-btn" data-tab="wheel" aria-label="Enarmad Bandit">
       <span class="nav-icon">🎰</span>
       <span class="nav-label">Bandit</span>
+    </button>
+    <button class="nav-btn" data-tab="bomb" aria-label="Bomben">
+      <span class="nav-icon">💣</span>
+      <span class="nav-label">Bomben</span>
     </button>
     <button class="nav-btn" data-tab="decision" aria-label="Ska vi göra det här">
       <span class="nav-icon">🤔</span>

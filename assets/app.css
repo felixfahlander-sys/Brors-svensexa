@@ -38,6 +38,7 @@
 /* ── Per-tab accent colors (cascade into all children) ── */
 #tab-pays     { --tc: #10b981; --tc2: #34d399; --tc-glow: rgba(16,185,129,.28); }
 #tab-wheel    { --tc: #a855f7; --tc2: #c084fc; --tc-glow: rgba(168,85,247,.28); }
+#tab-bomb     { --tc: #f97316; --tc2: #fb923c; --tc-glow: rgba(249,115,22,.28); }
 #tab-decision { --tc: #f43f5e; --tc2: #fb7185; --tc-glow: rgba(244,63,94,.28); }
 #tab-settings { --tc: #6366f1; --tc2: #818cf8; --tc-glow: rgba(99,102,241,.28); }
 
@@ -542,10 +543,126 @@ button:disabled { opacity: .28; pointer-events: none; }
 .nav-label { transition: color .15s; }
 
 /* Per-tab colored active state */
-/* 3 nav tabs: Betalar · Bandit · Ska vi? */
+/* 4 nav tabs: Betalar · Bandit · Bomben · Ska vi? */
 .nav-btn:nth-child(1).active { color: #10b981; }
 .nav-btn:nth-child(2).active { color: #a855f7; }
-.nav-btn:nth-child(3).active { color: #f43f5e; }
+.nav-btn:nth-child(3).active { color: #f97316; }
+.nav-btn:nth-child(4).active { color: #f43f5e; }
+
+/* ────────────────────────────────────────────
+   BOMBEN
+   ──────────────────────────────────────────── */
+.bomb-theme-card {
+  background: var(--surface);
+  border: 1.5px solid var(--border-hi);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.5rem;
+  text-align: center;
+}
+
+.bomb-theme-label {
+  font-size: .68rem;
+  font-weight: 800;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: .4rem;
+}
+
+.bomb-theme-name {
+  font-size: 2rem;
+  font-weight: 900;
+  letter-spacing: -.05em;
+  color: var(--tc2);
+  line-height: 1.1;
+}
+
+.bomb-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 0;
+}
+
+.bomb-emoji {
+  font-size: 9rem;
+  line-height: 1;
+  display: block;
+  filter: drop-shadow(0 0 18px rgba(249,115,22,.35));
+  will-change: transform;
+}
+
+.bomb-pulse       { animation: bombPulse 1.3s ease-in-out infinite; }
+.bomb-shake-light { animation: bombShakeLight  .75s ease-in-out infinite; filter: drop-shadow(0 0 28px rgba(249,115,22,.55)); }
+.bomb-shake-medium{ animation: bombShakeMedium .45s ease-in-out infinite; filter: drop-shadow(0 0 40px rgba(249,115,22,.75)); }
+.bomb-shake-intense{ animation: bombShakeIntense .22s linear infinite;    filter: drop-shadow(0 0 52px rgba(249,115,22,.95)); }
+
+@keyframes bombPulse {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.07); }
+}
+@keyframes bombShakeLight {
+  0%, 100% { transform: scale(1.05) rotate(0deg); }
+  33%      { transform: scale(1.05) rotate(-4deg); }
+  67%      { transform: scale(1.05) rotate(4deg); }
+}
+@keyframes bombShakeMedium {
+  0%, 100% { transform: scale(1.1) rotate(0deg); }
+  25%      { transform: scale(1.1) rotate(-7deg); }
+  75%      { transform: scale(1.1) rotate(7deg); }
+}
+@keyframes bombShakeIntense {
+  0%   { transform: scale(1.15) translate(0,0) rotate(0deg); }
+  15%  { transform: scale(1.15) translate(-5px,-3px) rotate(-8deg); }
+  30%  { transform: scale(1.15) translate(5px,3px)  rotate(8deg); }
+  45%  { transform: scale(1.15) translate(-4px,5px)  rotate(-6deg); }
+  60%  { transform: scale(1.15) translate(4px,-5px)  rotate(6deg); }
+  75%  { transform: scale(1.15) translate(-3px,-4px) rotate(-4deg); }
+  90%  { transform: scale(1.15) translate(3px,4px)   rotate(4deg); }
+  100% { transform: scale(1.15) translate(0,0) rotate(0deg); }
+}
+
+.bomb-instructions {
+  text-align: center;
+  font-size: .88rem;
+  color: var(--text-sub);
+  line-height: 1.55;
+  padding: 0 .5rem;
+}
+
+.bomb-explode-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem 0 1rem;
+  animation: fadeIn .2s ease;
+}
+
+.bomb-explode-emoji {
+  font-size: 9rem;
+  line-height: 1;
+  animation: explodeIn .35s cubic-bezier(.34,1.56,.64,1);
+}
+
+@keyframes explodeIn {
+  from { transform: scale(0); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+.bomb-explode-text {
+  font-size: 3.5rem;
+  font-weight: 900;
+  letter-spacing: -.06em;
+  color: var(--tc);
+}
+
+.bomb-explode-sub {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text);
+  text-align: center;
+}
 
 .decision-result-box {
   font-size: 1.35rem;
