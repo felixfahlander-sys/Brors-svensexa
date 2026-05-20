@@ -340,43 +340,47 @@ button:disabled { opacity: .28; pointer-events: none; }
    ENARMAD BANDIT
    ──────────────────────────────────────────── */
 .chaos-picker {
-  display: flex;
-  align-items: center;
-  gap: .6rem;
-  margin-bottom: .75rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: .875rem .875rem .75rem;
+  margin-bottom: .875rem;
 }
 .chaos-picker-label {
-  font-size: .7rem;
+  display: block;
+  font-size: .64rem;
   font-weight: 800;
-  letter-spacing: .04em;
+  letter-spacing: .07em;
   text-transform: uppercase;
   color: var(--text-dim);
-  white-space: nowrap;
+  margin-bottom: .55rem;
 }
 .chaos-picker-btns {
   display: flex;
   gap: .3rem;
-  flex: 1;
 }
 .chaos-lvl-btn {
   flex: 1;
-  height: 38px;
-  border: 1.5px solid var(--border);
+  min-width: 0;
+  height: 46px;
+  border: 1.5px solid var(--border-hi);
   border-radius: var(--radius-xs);
   background: var(--surface2);
-  font-size: 1.15rem;
+  font-size: 1.2rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background .15s, border-color .15s, transform .1s;
+  transition: background .18s, border-color .18s, box-shadow .18s, transform .1s;
   -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
 }
-.chaos-lvl-btn:active { transform: scale(.9); }
+.chaos-lvl-btn:active { transform: scale(.84); }
 .chaos-lvl-btn.active {
   background: var(--tc-glow);
-  border-color: var(--tc);
-  box-shadow: 0 0 10px var(--tc-glow);
+  border-color: var(--tc2);
+  box-shadow: 0 2px 16px var(--tc-glow);
 }
 
 #slot-machine {

@@ -479,11 +479,12 @@ function renderChaosPicker() {
     const el = document.getElementById(id);
     if (!el) return;
     const lvl = state.partyModeLevel || 0;
+    const levelNames = ['Finurlig', 'Social', 'Avslöjande', 'Festlig', 'Gränsland', 'Kaos'];
     el.innerHTML = `
       <div class="chaos-picker">
-        <span class="chaos-picker-label">🔥 Kaosläge</span>
+        <span class="chaos-picker-label">🔥 Kaosläge &mdash; ${levelNames[lvl]}</span>
         <div class="chaos-picker-btns">
-          ${CHAOS_EMOJIS.map((e, i) => `<button class="chaos-lvl-btn${lvl === i ? ' active' : ''}" data-level="${i}" aria-label="Kaosläge ${i}">${e}</button>`).join('')}
+          ${CHAOS_EMOJIS.map((e, i) => `<button class="chaos-lvl-btn${lvl === i ? ' active' : ''}" data-level="${i}" aria-label="Kaosläge ${i} ${levelNames[i]}">${e}</button>`).join('')}
         </div>
       </div>`;
     el.querySelectorAll('.chaos-lvl-btn').forEach(btn => {
