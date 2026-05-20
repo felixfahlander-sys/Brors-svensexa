@@ -3,7 +3,7 @@
    Cache-first strategy for offline use
    ================================================================ */
 
-const CACHE  = 'bcp-v1';
+const CACHE  = 'bcp-v2';
 const ASSETS = [
   '/',
   '/index.html',

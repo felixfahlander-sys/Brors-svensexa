@@ -339,6 +339,46 @@ button:disabled { opacity: .28; pointer-events: none; }
 /* ────────────────────────────────────────────
    ENARMAD BANDIT
    ──────────────────────────────────────────── */
+.chaos-picker {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  margin-bottom: .75rem;
+}
+.chaos-picker-label {
+  font-size: .7rem;
+  font-weight: 800;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+.chaos-picker-btns {
+  display: flex;
+  gap: .3rem;
+  flex: 1;
+}
+.chaos-lvl-btn {
+  flex: 1;
+  height: 38px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-xs);
+  background: var(--surface2);
+  font-size: 1.15rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .15s, border-color .15s, transform .1s;
+  -webkit-tap-highlight-color: transparent;
+}
+.chaos-lvl-btn:active { transform: scale(.9); }
+.chaos-lvl-btn.active {
+  background: var(--tc-glow);
+  border-color: var(--tc);
+  box-shadow: 0 0 10px var(--tc-glow);
+}
+
 #slot-machine {
   position: relative;
   width: 100%;
@@ -440,6 +480,7 @@ button:disabled { opacity: .28; pointer-events: none; }
 .setting-card input[type=text]:focus,
 .setting-card textarea:focus { outline: none; border-color: var(--tc); }
 .setting-card textarea { resize: vertical; min-height: 90px; }
+.setting-note { font-size: .75rem; color: var(--text-sub); line-height: 1.4; }
 
 .setting-row {
   display: flex; align-items: center; justify-content: space-between; gap: 1rem;

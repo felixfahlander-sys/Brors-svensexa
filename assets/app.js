@@ -10,60 +10,163 @@
 // ════════════════════════════════════════════════════════════════
 
 const STATE_KEY = 'bcp_state';
-const STATE_VERSION = 4;  // bump when defaults that override saved state change
+const STATE_VERSION = 5;  // bump when defaults that override saved state change
 
 const DEFAULTS = {
   stateVersion: STATE_VERSION,
   players: [
-    'Alexander Larsen', 'Andre Sundh', 'Andreas Lelli', 'Axel Carlborg', 'Daniel Adersteg',
-    'Felix Ihd', 'Filip Düsing', 'Fredrik Hain', 'Jacob Blomgren', 'Jakob Norrby',
-    'Jim Cargill', 'Johan Julin', 'Jona Dahl', 'Kalle Lund', 'Karsten Ihd',
-    'Ludde Flyckt', 'Marcus Alm', 'Martin Fuentes', 'Oscar Krook', 'Oskar Kappel',
-    'Oskar Sjöblom', 'Peter Arneryd',
+    'Alexander Sterner', 'André Sund Nellerup', 'Andreas Lelli', 'Axel Söderlund Carlberg',
+    'Daniel Adersteg', 'Felix Ihd', 'Filip Düsing', 'Fredrik Hain', 'Hampus Ihd',
+    'Jacob Blomgren', 'Jacob Norrny', 'Jim Cargill', 'Johan Julin', 'Jona Dahl',
+    'Karl Lund', 'Karsten Ihd', 'Ludvig Flyckt', 'Ludwig Svennerstål', 'Marcus Alm',
+    'Oscar Kappel', 'Oscar Krook', 'Oskar Stenström', 'Peter Arneryd',
+    'Philip Rosander', 'Willam Kåge Segerros',
   ],
-  bachelorName: 'Pontus',
+  bachelorName: 'Pontus Ihd',
   riggedMode: false,
   weights: {},                          // keyed by player name; missing = 1.0
   partyModeLevel: 0,                   // 0–5
   soundsOn: false,
   hapticsOn: true,
-  wheelItems: [
-    '🧠 Förklara hur en termostat fungerar som om du håller en föreläsning för ingenjörsstudenter. Minst 90 sekunder. Gruppen sätter betyg.',
-    '🎭 Byt personlighet med personen till vänster i 10 minuter — samma röst, samma kroppsspråk, samma sätt att röra sig.',
-    '🗳️ Personen till höger väljer en karaktär som du ska gestalta. Du får instruktionen i hemlighet — och börjar spela den direkt, utan att avslöja vem det är. Resten av gruppen gissar.',
-    '🎯 Gruppen ger dig ett adjektiv — ett enda beskrivande ord, som mjuk, aggressiv eller kunglig. Du måste beställa nästa drink helt i linje med det ordet. Röst, kroppsspråk, allt.',
-    '😶 Du får bara kommunicera via frågor resten av drinken. Kommer ett påstående ur munnen på dig — ny konsekvens direkt.',
-    '🪑 Gå fram till en okänd person i närheten och för ett 5-minuters samtal. Personen till vänster om dig väljer vilket ämne du måste ta upp.',
-    '🎤 Håll ett 2-minuters försvarstal för en åsikt som gruppen väljer åt dig — oavsett vad du själv tycker.',
-    '🧾 Personen som snurrade hjulet skriver Pontus bröllopstal på 3 minuter. Pontus framför det högt direkt efteråt — utan att ha läst det först.',
-    '🤝 Ditt namn är struket för resten av kvällen. Gruppen döper om dig nu.',
-    '🔄 Du och personen till höger byter identitet. Ni svarar på varandras frågor och beställer varandras drinkar i 15 minuter.',
-    '🎪 Du har 60 sekunder på dig att sälja in en helt påhittad produkt till gruppen. De röstar om de köper — majoriteten avgör.',
-    '🕵️ Du ska avslöja en hemlighet om personen till höger om dig för närmaste främling i närheten. Helt stonefaced. Personen som snurrade hjulet väljer hemligheten.',
-    '🧩 Personen som snurrade hjulet formulerar ett problem. Du har 1 minut på dig att samla ihop saker från omgivningen — sedan 2 minuter att lösa det med bara det du hittade.',
-    '🎬 Gruppen väljer en filmscen. Du spelar samtliga roller själv — direkt och utan förberedelse.',
-    '👑 Du är gruppens personlige butler i 20 minuter. Vad det innebär beslutar gruppen gemensamt.',
-  ],
-  decisionAnswers: [
-    'ABSOLUT INTE 🚫',
-    'JA OCH FILMA DET 📹',
-    'Bara om {{NAME}} betalar 💸',
-    'Fråga {{NAME}} först 🤔',
-    'Andarna säger… JA 🎱',
-    'HELVETES JA! 🔥',
-    'Kanske efter en drink till… 🍺',
-    'Ditt framtida jag säger NEJ 🚫',
-    'GRUPPEN KRÄVER DET 👥',
-    'Tecknen pekar mot ånger 🔮',
-    'BARA OM {{NAME}} GÅR FÖRST',
-    'Lyckan gynnar de modiga! KÖR!',
-    '{{NAME}} förlåter dig aldrig. Gör det.',
-    'Tre ord: Gör. Det. Inte.',
-    'Garanterat dålig idé. Garanterat kul. JA!',
-  ],
+  wheelItems: [],  // user-added custom items; built-in items come from WHEEL_ITEM_POOLS
   recentPays: [],      // last 3 names picked for "pays"
   paysExcluded: [],    // temp excludes for this round
 };
+
+// ════════════════════════════════════════════════════════════════
+// WHEEL ITEM POOLS  (unlocked progressively by partyModeLevel)
+// ════════════════════════════════════════════════════════════════
+
+const WHEEL_ITEM_POOLS = [
+  // Level 0 — Finurlig
+  [
+    '🗺️ Du har 60 sekunder på dig att rabbla 20 av Sveriges 25 landskap. Missar du — svepa en öl.',
+    '🎙️ Gruppen ger dig tre helt orelaterade ord. Du har 90 sekunder på dig att hålla ett sammanhängande tal där alla tre ingår naturligt.',
+    '🍝 Förklara internets uppkomst med enbart matmetaforer. Gruppen bedömer på skala 1–10.',
+    '🔧 Du har 2 minuter på dig att övertyga gruppen om att en helt vardaglig sak är historiens viktigaste uppfinning. Gruppen väljer föremålet.',
+    '🌍 Nämn 10 länder som slutar på vokal på 30 sekunder. Missar du — börja om från ett.',
+  ],
+  // Level 1 — Social
+  [
+    '🗳️ Gruppen väljer en åsikt du måste försvara i 2 minuter — oavsett vad du egentligen tycker. Gruppen får ställa motfrågor.',
+    '❤️ Gruppen ger dig tre adjektiv. Du håller ett 60-sekunders tal om kärleken där alla tre måste användas på ett trovärdigt sätt.',
+    '💼 Du ska på 90 sekunder sälja in en tjänst som inte borde existera. Gruppen väljer tjänsten.',
+    '🎭 Gruppen ger dig ett yrke och en känsla. Du håller en 60-sekunders monolog i karaktär — utan att nämna varken yrket eller känslan. Gruppen gissar.',
+    '🤥 Du har 60 sekunder på dig att hitta på tre rimliga lögner och en sanning om dig själv. Gruppen röstar på sanningen.',
+  ],
+  // Level 2 — Avslöjande
+  [
+    '😬 Berätta om det mest desperate du gjort för att imponera på någon. Gruppen röstar om det funkade.',
+    '🔥 Du har 90 sekunder på dig att försvara din mest kontroversiella åsikt. Gruppen får ställa motfrågor utan nåd.',
+    '😔 Berätta om ett beslut du ångrar. Gruppen dömer om ångern var befogad.',
+    '🎭 Gruppen ger dig en känsla. Du beskriver din jobbigaste dag någonsin — men bara med den känslan som filter.',
+    '🤦 Vad är det värsta rådet du fått i livet? Förklara varför du ändå följde det.',
+  ],
+  // Level 3 — Festlig
+  [
+    '👑 Du är gruppens personlige butler i 15 minuter. Vad det innebär beslutar gruppen gemensamt — men inget olagligt.',
+    '❓ Du kommunicerar bara via frågor resten av drinken. Fäller du ett påstående börjar du om — och tar en klunk.',
+    '⚔️ Gruppen väljer ett historiskt event. Du håller ett passionerat 60-sekunders försvarstal för den förlorande sidan.',
+    '🏷️ Du byter namn för resten av kvällen. Gruppen döper om dig nu — alla som använder det gamla namnet tar en klunk.',
+    '🕵️ Gruppen ger dig en konspiration. Du har 90 sekunder på dig att göra den trovärdig med tre bevis.',
+  ],
+  // Level 4 — Gränsland
+  [
+    '🧾 Gruppen skriver Pontus bröllopstal på 3 minuter. Han framför det högt direkt — utan att ha läst det först.',
+    '🔄 Du och personen till höger byter identitet i 15 minuter. Ni svarar på varandras frågor och beställer varandras nästa drink.',
+    '🎯 Gruppen väljer tre påståenden om dig — ett sant och två falska. Du måste försvara alla tre som om de vore sanna. Gruppen gissar vilket som faktiskt stämmer.',
+    '🎤 Gruppen väljer en person i sällskapet. Du håller ett 2-minuters roast om den personen — de får inte avbryta. Efteråt får de 30 sekunder att svara.',
+    '📺 Du har 60 sekunder på dig att improvisera en reklamsnutt för Pontus — som produkt. Gruppen väljer målgrupp.',
+  ],
+  // Level 5 — Kaos
+  [
+    '🩲 Du klär av dig till bara underkläder. Klär sedan på dig igen.',
+    '😱 Gruppen röstar fram det pinsammaste du kan göra på 60 sekunder. Vägrar du — svepa en öl.',
+    '📞 Du ringer ett valfritt familjemedlem och förklarar att du kommit på något viktigt. Gruppen väljer vad det viktiga är. Lägger du på inom 30 sekunder — svepa en öl.',
+    '🎲 Du väljer själv ett straff — gruppen röstar om det är tillräckligt hårt. Håller de inte med — de väljer ett eget.',
+    '💔 Gruppen väljer ett föremål. Du håller ett genuint känsloladdat avskedstal till det i 60 sekunder — skrattar du börjar du om.',
+  ],
+];
+
+function getWheelItems() {
+  const level = Math.min(state.partyModeLevel || 0, WHEEL_ITEM_POOLS.length - 1);
+  let items = [];
+  for (let i = 0; i <= level; i++) items = items.concat(WHEEL_ITEM_POOLS[i]);
+  if (state.wheelItems && state.wheelItems.length) items = items.concat(state.wheelItems);
+  return items;
+}
+
+// ════════════════════════════════════════════════════════════════
+// DECISION ANSWER POOLS  (unlocked progressively by partyModeLevel)
+// ════════════════════════════════════════════════════════════════
+
+const DECISION_ANSWER_POOLS = [
+  // Level 0
+  [
+    'Absolut inte. 🚫',
+    'Ditt framtida jag tackar dig för att du låter bli.',
+    'Tre ord: Gör. Det. Inte.',
+    'Andarna har talat… NEJ.',
+    'Kanske om tio år. Inte idag.',
+    'JA — men du kommer ångra dig. 😬',
+    'Lyckan gynnar de modiga. Du är inte modig nog. NEJ.',
+  ],
+  // Level 1
+  [
+    '{{NAME}} skulle aldrig. Följ deras exempel.',
+    'Magkänslan säger nej. Lyssna på den.',
+    'Bra idé på pappret. Hemsk idé i verkligheten. NEJ.',
+    'Kanske efter en drink till. 🍺',
+    'Gruppen är splittrad. Det säger allt. NEJ.',
+    'Dålig idé — men inte omöjlig. Kanske.',
+    '{{NAME}} nickar tveksamt. Det räcker inte. NEJ.',
+  ],
+  // Level 2
+  [
+    'Myntet föll på… gör det.',
+    'Alla bra historier börjar såhär. Alla dåliga också.',
+    '{{NAME}} vill inte veta om det. Gör det ändå.',
+    'Svaret beror på vad du menar med ska vi. NEJ.',
+    'Garanterat dålig idé. Garanterat kul. Du väljer.',
+    'Dina instinkter säger nej. Dina instinkter har haft fel förut.',
+    'Fråga inte igen. Svaret är fortfarande oklart.',
+  ],
+  // Level 3
+  [
+    'Svaret är ja. Frågan var fel från början.',
+    '{{NAME}} sätter sin heder på det. KÖR.',
+    'Ångrar du dig sen? Definitivt. Värt det? Absolut.',
+    'Gruppen är inne på det. En röst saknas — din.',
+    'Livet är kort. Svaret borde vara ja. Men nej.',
+    'Det finns en tid och plats för allt. Den är nu. JA.',
+    '{{NAME}} hade aldrig frågat. De hade bara gjort det.',
+  ],
+  // Level 4
+  [
+    'Alla vill se det. Framförallt {{NAME}}. GÖR DET. 👀',
+    'På en svensexa finns bara ett svar. JA. 🔥',
+    '{{NAME}} förlåter dig aldrig om du inte gör det.',
+    'Svaret är ja — gruppen filmar. Du vet om det.',
+    'Pontus hade gjort det utan att tveka. KÖR.',
+    'Dålig idé. Fantastisk historia. JA.',
+    'Gruppen har röstat. Resultatet är hemligt. Men ja.',
+  ],
+  // Level 5
+  [
+    'JA. Nästa fråga.',
+    'Självklart ja. Varför frågade du ens.',
+    'Pontus kräver det. Gruppen kräver det. KÖR. 👑',
+    'Det finns inget annat svar ikväll. JA. 🔥',
+    '{{NAME}} går först. Sedan du. JA.',
+  ],
+];
+
+function getDecisionAnswers() {
+  const level = Math.min(state.partyModeLevel || 0, DECISION_ANSWER_POOLS.length - 1);
+  let answers = [];
+  for (let i = 0; i <= level; i++) answers = answers.concat(DECISION_ANSWER_POOLS[i]);
+  return answers;
+}
 
 let state = {};
 
@@ -366,11 +469,42 @@ function initPays() {
 }
 
 // ════════════════════════════════════════════════════════════════
+// KAOSLÄGE PICKER  (inline control shown on Bandit, Bomben, Ska vi?)
+// ════════════════════════════════════════════════════════════════
+
+const CHAOS_EMOJIS = ['😇', '🎉', '😬', '🎭', '🔥', '💥'];
+
+function renderChaosPicker() {
+  ['chaos-ctrl-wheel', 'chaos-ctrl-bomb', 'chaos-ctrl-decision'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const lvl = state.partyModeLevel || 0;
+    el.innerHTML = `
+      <div class="chaos-picker">
+        <span class="chaos-picker-label">🔥 Kaosläge</span>
+        <div class="chaos-picker-btns">
+          ${CHAOS_EMOJIS.map((e, i) => `<button class="chaos-lvl-btn${lvl === i ? ' active' : ''}" data-level="${i}" aria-label="Kaosläge ${i}">${e}</button>`).join('')}
+        </div>
+      </div>`;
+    el.querySelectorAll('.chaos-lvl-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        playSoundClick();
+        haptic([10]);
+        state.partyModeLevel = parseInt(btn.dataset.level, 10);
+        saveState();
+        renderChaosPicker();
+        buildSlotTrack();
+      });
+    });
+  });
+}
+
+// ════════════════════════════════════════════════════════════════
 // SHOULD WE DO THIS?
 // ════════════════════════════════════════════════════════════════
 
 function rollDecision() {
-  const answers = state.decisionAnswers || DEFAULTS.decisionAnswers;
+  const answers = getDecisionAnswers();
   if (!answers.length) { toast('⚠️ Inga svar att välja bland!'); return; }
 
   let answer = answers[Math.floor(Math.random() * answers.length)];
@@ -389,6 +523,7 @@ function rollDecision() {
 }
 
 function initDecision() {
+  renderChaosPicker();
   document.getElementById('btn-decision-roll').addEventListener('click', () => {
     playSoundClick();
     rollDecision();
@@ -405,7 +540,9 @@ let slotSpinning = false;
 function buildSlotTrack() {
   const track = document.getElementById('slot-track');
   if (!track) return;
-  const items = state.wheelItems;
+  const items = getWheelItems();
+  renderChaosPicker();
+
   const reps = 8;
   track.innerHTML = '';
   for (let r = 0; r < reps; r++) {
@@ -422,7 +559,7 @@ function buildSlotTrack() {
 
 function spinSlot() {
   if (slotSpinning) return;
-  const items = state.wheelItems;
+  const items = getWheelItems();
   if (!items || !items.length) { toast('⚠️ Inga alternativ att snurra!'); return; }
 
   slotSpinning = true;
@@ -628,6 +765,7 @@ function stopBomb() {
 }
 
 function initBomb() {
+  renderChaosPicker();
   document.getElementById('btn-bomb-start').addEventListener('click', () => {
     playSoundClick();
     startBomb();
@@ -675,8 +813,9 @@ function renderSettings() {
 
     <!-- Bandit-alternativ -->
     <div class="setting-card">
-      <label>🎰 Bandit-alternativ (ett per rad)</label>
-      <textarea id="settings-wheel-items">${state.wheelItems.join('\n')}</textarea>
+      <label>🎰 Bandit-alternativ</label>
+      <p class="setting-note">Inbyggda alternativ: ${getWheelItems().length - (state.wheelItems || []).length} st (ändra kaosläget direkt i Bandit-fliken). Lägg till egna nedan:</p>
+      <textarea id="settings-wheel-items" placeholder="Egna alternativ, ett per rad…">${(state.wheelItems || []).join('\n')}</textarea>
     </div>
 
     <!-- Ljud & Vibration -->
@@ -694,17 +833,6 @@ function renderSettings() {
           <input type="checkbox" id="settings-haptics" ${state.hapticsOn ? 'checked' : ''}>
           <span class="toggle-track"></span>
         </label>
-      </div>
-    </div>
-
-    <!-- Kaosläge -->
-    <div class="setting-card">
-      <label>🔥 Kaosläge</label>
-      <div class="party-slider">
-        <span>😇</span>
-        <input type="range" id="settings-party" min="0" max="5" step="1" value="${state.partyModeLevel}">
-        <span>🔥</span>
-        <span class="party-slider-val" id="party-val">${state.partyModeLevel}</span>
       </div>
     </div>
 
@@ -765,12 +893,6 @@ function renderSettings() {
   document.getElementById('settings-haptics').addEventListener('change', e => {
     state.hapticsOn = e.target.checked; saveState();
   });
-  document.getElementById('settings-party').addEventListener('input', e => {
-    state.partyModeLevel = parseInt(e.target.value, 10);
-    document.getElementById('party-val').textContent = state.partyModeLevel;
-    saveState();
-  });
-
   document.getElementById('btn-reset-paysexclude').addEventListener('click', () => {
     state.paysExcluded = [];
     state.recentPays = [];
